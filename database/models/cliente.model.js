@@ -5,7 +5,7 @@ const cliente = sequelize.define("cliente", {
     cliente_id:{
         type: DataTypes.INTEGER,
         primaryKey: true,
-        autoincrement: true
+        autoIncrement: true
     },
     nome:{
         type: DataTypes.STRING(120),
@@ -19,6 +19,9 @@ const cliente = sequelize.define("cliente", {
     telefone:{
         type: DataTypes.STRING(20)
     } 
+}, {
+    tableName: "cliente",
+    timestamps: false
 });
 
 module.exports = cliente;
