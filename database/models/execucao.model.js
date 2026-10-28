@@ -35,6 +35,17 @@ const execucao = sequelize.define("execucao", {
                 return;
             }
             throw new Error("A data final e o motivo de encerramento devem ser informados juntos");
+        },
+        validarOrdemData(){
+            if(
+                this.data_fim != null &&
+                this.data_inicio != null &&
+                this.data_fim < this.data_inicio
+            ) {
+                throw new Error(
+                    "A data final não pode ser anterior a data incial"
+                );
+            }
         }
     },
     indexes: [
