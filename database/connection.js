@@ -1,11 +1,11 @@
 const { Sequelize } = require("sequelize");
 
 // new Sequelize(banco, usuario, senha, opcoes)
-const sequelize = new Sequelize("", "", "", {
+const sequelize = new Sequelize("sistemalauffens", "Biluga", "f7c3h2f6", {
     host: "localhost",
     port: 5432,
     dialect: "postgres",
-    logging: false, // troque para console.log para ver o SQL gerado pelo ORM
+    logging: console.log,
 });
 
 module.exports = sequelize;
