@@ -65,7 +65,20 @@ const usuario = sequelize.define("usuario", {
         allowNull: false,
         defaultValue: true
     }
-})
+}, {
+    tableName: "usuario",
+    timestamps: false
+});
 
+usuario.associate = (models) => { /* mostrar as notificações recebidas */
+    usuario.hasMany(models.notificacao, {
+        foreignKey: "usuario_destinatario_id",
+        as: "notificacao"
+    });
+    usuario.hasMany(models.projeto_user, { /* mostrar as participaçoes do funcionario */
+        foreignKey: "usuario_id",
+        as: "projeto_user"
+    })
+}
 
 module.exports = usuario;

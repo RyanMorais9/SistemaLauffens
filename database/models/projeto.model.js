@@ -72,14 +72,14 @@ const projeto = sequelize.define("projeto", {
     tableName: "projeto",
     timestamps: false,
     validate: {
-        validarHoras(){
+        validarDatas(){
             if(this.data_fim == null){
                 return;
             }
             if(this.data_inicio == null){
                 throw new Error("Data de inicio necessaria para ter uma data de conclusão");
             }
-            if(this.data_fim < data_inicio){
+            if(this.data_fim < this.data_inicio){
                 throw new Error("A data de conclusão deve ser maior que a de inicio");
             }
             
@@ -95,6 +95,18 @@ projeto.associate = (models) => {
     projeto.belongsTo(models.usuario, {
         foreignKey: "criado_por_id",
         as: "usuario"
+    });
+    projeto.hasMany(models.etapa, {
+        foreignKey: "proj_id",
+        as: "etapa"
+    });
+    projeto.hasMany(models.projeto_user, {
+        foreignKey: "proj_id",
+        as: "projeto_user"
+    });
+    projeto.hasMany(models.manutencao, {
+        foreignKey: "proj_id",
+        as: "manutencao"
     })
 }
 

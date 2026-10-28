@@ -56,11 +56,13 @@ const projeto_user = sequelize.define("projeto_user", {
 }, {
     tableName: "projeto_user",
     timestamps: false,
-    indexes: {
-        name: "uq_proj_user",
-        unique: true,
-        fields: ["proj_id","usuario_id"]
-    }
+    indexes: [
+        {
+            name: "uq_proj_user",
+            unique: true,
+            fields: ["proj_id", "usuario_id"]
+        }
+    ]
 })
 
 projeto_user.associate = (models) => {

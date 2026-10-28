@@ -24,4 +24,11 @@ const cliente = sequelize.define("cliente", {
     timestamps: false
 });
 
+cliente.associate = (models) => { /* para mostrar projetos associados a certos cliente */
+    cliente.hasMany(models.projeto, {
+        foreignKey: "cliente_id", 
+        as: "projeto"
+    })
+}
+
 module.exports = cliente;

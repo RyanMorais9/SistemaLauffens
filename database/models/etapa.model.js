@@ -45,15 +45,15 @@ const etapa = sequelize.define("etapa", {
         },
     ],
 
-    validate:{
+    validate: {
         validarDatas() {
-            if(this.data_fim == null) {
+            if (this.data_fim == null) {
                 return;
             }
-            if(this.data_inicio == null) {
+            if (this.data_inicio == null) {
                 throw new Error("Informe a data incial antes da data final")
             }
-            if(this.data_fim < this.data_inicio) {
+            if (this.data_fim < this.data_inicio) {
                 throw new Error("A data final não pode ser anterior a data inicial")
             }
         }
@@ -62,9 +62,13 @@ const etapa = sequelize.define("etapa", {
 
 etapa.associate = (models) => {
     etapa.belongsTo(models.projeto, {
-        foreignKey: "proj_id", 
+        foreignKey: "proj_id",
         as: "projeto",
     });
+    etapa.hasMany(models.execucao, { /* Mostrar as execuções e pausas daquela etapa */
+        foreignKey: "etapa_id",
+        as: "execucao"
+    })
 }
 
 module.exports = etapa;
