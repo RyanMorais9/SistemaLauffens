@@ -1,11 +1,24 @@
 const { Sequelize } = require("sequelize");
 
-// new Sequelize(banco, usuario, senha, opcoes)
-const sequelize = new Sequelize("sistemalauffens", "Biluga", "f7c3h2f6", {
-    host: "localhost",
-    port: 5432,
+const commonOptions = {
     dialect: "postgres",
-    logging: console.log,
-});
+    host: process.env.DB_HOST || "localhost",
+    port: Number(process.env.DB_PORT || 5432),
+    logging: process.env.DB_LOGGING === "true" ? console.log : false,
+};
+
+const sequelize = process.env.DATABASE_URL
+    ? new Sequelize(process.env.DATABASE_URL, {
+        ...commonOptions,
+        dialectOptions: process.env.DB_SSL === "true"
+            ? { ssl: { require: true, rejectUnauthorized: false } }
+            : {},
+    })
+    : new Sequelize(
+        process.env.DB_NAME || "sistemalauffens",
+        process.env.DB_USER || "postgres",
+        process.env.DB_PASSWORD,
+        commonOptions
+    );
 
 module.exports = sequelize;
