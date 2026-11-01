@@ -1,5 +1,2 @@
-const pgp = require("pg-promise")();
-
-const db = pgp('');
-
-module.exports = db;
+// Ponto único de acesso à conexão e aos models Sequelize.
+module.exports = require("../database/models");
