@@ -46,7 +46,7 @@ create table cliente(
 );
 
 create type porte as enum('Pequeno', 'Médio', 'Grande');
-create type status_proj as enum('Planejado', 'Em andamento', 'Atrasado', 'Concluído');
+create type status_proj as enum('Planejado', 'Em andamento', 'Atrasado', 'Cancelado', 'Concluído');
 create table projeto(
     proj_id serial primary key, 
     cliente_id integer not null,
@@ -69,9 +69,9 @@ create table projeto_user(
     proj_user_id serial primary key,
     proj_id integer not null,
     usuario_id integer not null,
-    salario_referencia numeric(6, 2) check(salario_referencia > 0) not null,
-    horas_mensais_referencia numeric(6, 2) check(horas_mensais_referencia > 0) not null,
-    custo_hora_referencia numeric(4, 2) check(custo_hora_referencia > 0) not null,
+    salario_referencia numeric(8, 2) check(salario_referencia > 0) not null,
+    horas_mensais_referencia numeric(8, 2) check(horas_mensais_referencia > 0) not null,
+    custo_hora_referencia numeric(8, 2) check(custo_hora_referencia > 0) not null,
     vinculado_em timestamptz not null default current_timestamp,
 
     constraint fk_projUser_proj foreign key(proj_id) references projeto(proj_id),
@@ -90,7 +90,7 @@ create table etapa(
     data_fim timestamptz check(data_fim is null or (data_inicio is not null and data_fim >= data_inicio)),
     tempo_planejado integer check(tempo_planejado > 0) not null, /* minutos */
 
-    constraint fk_etapa_proj foreign key(proj_id) references projeto(proj_id)
+    constraint fk_etapa_proj foreign key(proj_id) references projeto(proj_id),
     constraint uq_proj_etapa unique(proj_id, tipo) /* permite cadastrar Corte, Fitagem, Refinamento e Embalamento para o mesmo projeto, mas impede duas etapas de Corte no mesmo projeto. */
 );
 
@@ -127,7 +127,7 @@ create table manutencao(
     data_retorno date not null,
     motivo motivo_mntnc, 
     descricao text not null,
-    status status_manunt,
+    status status_mntnc,
     data_conclusao date check(data_conclusao is null or data_conclusao >= data_retorno),
 
     constraint fk_mntnc_proj foreign key(proj_id) references projeto(proj_id)

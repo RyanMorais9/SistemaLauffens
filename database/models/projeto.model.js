@@ -24,7 +24,7 @@ const projeto = sequelize.define("projeto", {
         allowNull: false
     },
     status: {
-        type: DataTypes.ENUM('Planejado', 'Em andamento', 'Atrasado', 'Concluído'),
+        type: DataTypes.ENUM('Planejado', 'Em andamento', 'Atrasado', 'Cancelado', 'Concluído'),
         allowNull: false
     },
     prazo_planejado: {
