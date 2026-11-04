@@ -2,6 +2,11 @@
 
 Sistema de acompanhamento da produção de móveis da Lauffens, com projetos, etapas, controle de tempo, manutenção, custos de mão de obra e notificações.
 
+## O que foi implementado pelos membros
+Ryan Morais = database(completo), cliente, auth, projeto, projeto_user, usuario
+
+Eduardo Mariano = notificacao, manutencao, execucao, etapa
+
 ## Guia das operações a implementar
 
 Este documento é um roteiro de desenvolvimento, não uma lista de funcionalidades já concluídas. As operações abaixo consideram o SQL do projeto e os requisitos da pasta `Documentos/TodasInformaçõesIntegrador`. As sugestões complementares estão identificadas como tal.
