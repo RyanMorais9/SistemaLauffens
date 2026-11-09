@@ -9,12 +9,14 @@ const notificacoesRoutes = require("./src/notificacao/notificacoes.routes.js");
 const projetosRoutes = require("./src/projeto/projetos.routes.js");
 const projetosUsersRoutes = require("./src/projeto_user/projetos_users.routes.js");
 const usuariosRoutes = require("./src/usuario/usuarios.routes.js");
+const authRoutes = require("./src/auth/auth.routes.js");
 
 const app = express();
 const PORT = 9001;
 
 app.use(cors());
 app.use(express.json());
+app.use(authRoutes);
 
 app.use(clientesRoutes);
 app.use(etapasRoutes);
