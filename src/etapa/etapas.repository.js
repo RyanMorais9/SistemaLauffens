@@ -1,4 +1,4 @@
-const { etapa, execucao, projeto, sequelize } = require("../../database/models");
+const { etapa, execucao, projeto, projeto_user, sequelize } = require("../../database/models");
 
 const atributosEtapa = [
     "etapa_id",
@@ -23,9 +23,10 @@ class EtapasRepository {
         return projeto.findByPk(id, options);
     }
 
-    listar(projId) {
+    listar(projId, options = {}) {
         const where = projId === undefined ? {} : { proj_id: projId };
         return etapa.findAll({
+            ...options,
             attributes: atributosEtapa,
             where,
             order: [
@@ -105,6 +106,17 @@ class EtapasRepository {
             attributes: atributosEtapa,
             where: { proj_id: projId, status: "Em andamento" },
             order: [["tipo", "ASC"]],
+        });
+    }
+
+    listarParticipantes(projId, options = {}) {
+        return projeto_user.findAll({ where: { proj_id: projId }, ...options });
+    }
+
+    listarExecucoesProjeto(projId, options = {}) {
+        return execucao.findAll({
+            ...options,
+            include: [{ model: etapa, as: "etapa", where: { proj_id: projId }, attributes: [] }],
         });
     }
 

@@ -20,8 +20,7 @@ app.use(passport.initialize());
 
 app.use("/clientes", clientesRoutes);
 app.use("/etapas", etapasRoutes);
-// O módulo de projetos pode ainda estar em implementação em outras cópias.
-if (typeof projetosRoutes === "function") app.use("/projetos", projetosRoutes);
+app.use("/projetos", projetosRoutes);
 
 if (require.main === module) app.listen(PORT, () => {
     console.log(`Servidor rodando em http://localhost:${PORT}`);

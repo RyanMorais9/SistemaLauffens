@@ -135,6 +135,56 @@ async function editarPlanejamento(id, dados) {
     });
 }
 
+async function exigirProjetoAtivo(etapa, transaction) {
+    const projeto = await etapasRepository.buscarProjetoPorId(etapa.proj_id, {
+        transaction, lock: transaction.LOCK.UPDATE,
+    });
+    if (!projeto) throw erroHttp(404, "Projeto não encontrado.");
+    if (["Concluído", "Cancelado"].includes(projeto.status)) {
+        throw erroHttp(409, "O projeto está concluído ou cancelado.");
+    }
+    return projeto;
+}
+
+async function exigirSequencia(etapa, transaction) {
+    const etapas = await etapasRepository.listar(etapa.proj_id, { transaction });
+    const anteriores = tiposEtapa.slice(0, tiposEtapa.indexOf(etapa.tipo));
+    if (anteriores.some((tipo) => !etapas.some((item) => item.tipo === tipo && item.status === "Concluída"))) {
+        throw erroHttp(409, "Conclua as etapas anteriores antes de executar esta etapa.");
+    }
+    if (etapas.some((item) => item.etapa_id !== etapa.etapa_id && ["Em andamento", "Pausada"].includes(item.status))) {
+        throw erroHttp(409, "Outra etapa do projeto ainda está em execução.");
+    }
+}
+
+async function finalizarProjetoSeCompleto(projeto, agora, transaction) {
+    const etapas = await etapasRepository.listar(projeto.proj_id, { transaction });
+    if (!tiposEtapa.every((tipo) => etapas.some((item) => item.tipo === tipo && item.status === "Concluída"))) return;
+    const participantes = await etapasRepository.listarParticipantes(projeto.proj_id, { transaction });
+    if (!participantes.length) throw erroHttp(409, "Vincule os funcionários antes de concluir o projeto.");
+    const execucoes = await etapasRepository.listarExecucoesProjeto(projeto.proj_id, { transaction });
+    let duracao = 0;
+    for (const execucao of execucoes) {
+        if (!execucao.data_fim) throw erroHttp(409, "Ainda existe uma execução aberta no projeto.");
+        const periodo = new Date(execucao.data_fim) - new Date(execucao.data_inicio);
+        if (!Number.isFinite(periodo) || periodo < 0) throw erroHttp(409, "Período de execução inválido.");
+        duracao += periodo;
+    }
+    const custoHora = participantes.reduce((total, item) => {
+        const valor = Number(item.custo_hora_referencia);
+        if (!Number.isFinite(valor) || valor <= 0) throw erroHttp(409, "Referência de custo inválida.");
+        return total + valor;
+    }, 0);
+    const custo = Number((duracao / 3600000 * custoHora).toFixed(2));
+    const base = Number(projeto.valor_base);
+    const total = Number((base + custo).toFixed(2));
+    if (!Number.isFinite(base) || base <= 0 || custo < 0.01 || custo > 9999999.99 || total > 9999999.99) {
+        throw erroHttp(409, "Os valores calculados não cabem nos limites financeiros do projeto.");
+    }
+    await projeto.update({ status: "Concluído", data_fim: agora,
+        custo_mao_de_obra_final: custo, valor_final: total }, { transaction });
+}
+
 async function iniciarEtapa(id) {
     const etapaId = validarId(id);
     return etapasRepository.iniciarTransacao(async (transaction) => {
@@ -148,14 +198,8 @@ async function iniciarEtapa(id) {
         }
 
         const agora = new Date();
-        const projeto = await etapasRepository.buscarProjetoPorId(etapa.proj_id, {
-            transaction,
-            lock: transaction.LOCK.UPDATE,
-        });
-        if (!projeto) throw erroHttp(404, "Projeto não encontrado.");
-        if (["Concluído", "Cancelado"].includes(projeto.status)) {
-            throw erroHttp(409, "Não é possível iniciar etapas de um projeto concluído ou cancelado.");
-        }
+        const projeto = await exigirProjetoAtivo(etapa, transaction);
+        await exigirSequencia(etapa, transaction);
         if (!projeto.data_inicio) {
             await projeto.update({
                 data_inicio: agora,
@@ -203,6 +247,8 @@ async function retomarEtapa(id) {
     const etapaId = validarId(id);
     return etapasRepository.iniciarTransacao(async (transaction) => {
         const etapa = await exigirEtapa(etapaId, transaction);
+        const projeto = await exigirProjetoAtivo(etapa, transaction);
+        await exigirSequencia(etapa, transaction);
         if (etapa.status !== "Pausada") {
             throw erroHttp(409, "Só é possível retomar uma etapa pausada.");
         }
@@ -225,6 +271,8 @@ async function concluirEtapa(id) {
     const etapaId = validarId(id);
     return etapasRepository.iniciarTransacao(async (transaction) => {
         const etapa = await exigirEtapa(etapaId, transaction);
+        const projeto = await exigirProjetoAtivo(etapa, transaction);
+        await exigirSequencia(etapa, transaction);
         if (etapa.status !== "Em andamento") {
             throw erroHttp(409, "Só é possível concluir uma etapa em andamento.");
         }
@@ -248,6 +296,7 @@ async function concluirEtapa(id) {
             { status: "Concluída", data_fim: agora },
             { transaction }
         );
+        await finalizarProjetoSeCompleto(projeto, agora, transaction);
         return etapasRepository.buscarPorId(etapaId, undefined, { transaction });
     });
 }
