@@ -1,40 +1,24 @@
 const etapasRepository = require("./etapas.repository");
 
 const tiposEtapa = ["Corte", "Fitagem", "Refinamento", "Embalamento"];
-const camposPlanejamento = ["tipo", "tempo_planejado"];
 
 function erroHttp(status, mensagem) {
-    const error = new Error(mensagem);
-    error.status = status;
-    return error;
+    const erro = new Error(mensagem);
+    erro.status = status;
+    return erro;
 }
 
 function validarId(id, nome = "ID da etapa") {
-    if (!Number.isInteger(Number(id)) || Number(id) < 1) {
+    const numero = Number(id);
+    if (!Number.isInteger(numero) || numero < 1) {
         throw erroHttp(400, `${nome} deve ser um inteiro positivo.`);
     }
-    return Number(id);
+    return numero;
 }
 
-function validarTipo(tipo) {
-    if (!tiposEtapa.includes(tipo)) {
-        throw erroHttp(400, `Tipo inválido. Use: ${tiposEtapa.join(", ")}.`);
-    }
-}
-
-function validarTempoPlanejado(tempo) {
-    if (!Number.isInteger(tempo) || tempo < 1) {
-        throw erroHttp(400, "tempo_planejado deve ser um inteiro positivo em minutos.");
-    }
-}
-
-function validarCampos(dados, permitidos) {
+function validarObjeto(dados) {
     if (!dados || typeof dados !== "object" || Array.isArray(dados)) {
         throw erroHttp(400, "Envie um objeto JSON válido.");
-    }
-    const desconhecidos = Object.keys(dados).filter((campo) => !permitidos.includes(campo));
-    if (desconhecidos.length > 0) {
-        throw erroHttp(400, `Campos não permitidos: ${desconhecidos.join(", ")}.`);
     }
 }
 
@@ -48,20 +32,32 @@ async function exigirEtapa(id, transaction) {
     return etapa;
 }
 
-async function cadastrar(dados) {
-    validarCampos(dados, ["proj_id", "tipo", "status", "tempo_planejado"]);
-    const projId = validarId(dados.proj_id, "proj_id");
-    validarTipo(dados.tipo);
-    validarTempoPlanejado(dados.tempo_planejado);
-    if (dados.status !== undefined && dados.status !== "Planejada") {
-        throw erroHttp(400, "Uma nova etapa deve ser cadastrada com status Planejada.");
-    }
-
-    const projeto = await etapasRepository.buscarProjetoPorId(projId);
+async function exigirProjeto(id) {
+    const projeto = await etapasRepository.buscarProjetoPorId(id);
     if (!projeto) {
         throw erroHttp(404, "Projeto não encontrado.");
     }
+}
 
+async function cadastrar(dados) {
+    validarObjeto(dados);
+    const permitidos = ["proj_id", "tipo", "status", "tempo_planejado"];
+    if (Object.keys(dados).some((campo) => !permitidos.includes(campo))) {
+        throw erroHttp(400, "A etapa contém campos não permitidos.");
+    }
+
+    const projId = validarId(dados.proj_id, "proj_id");
+    if (!tiposEtapa.includes(dados.tipo)) {
+        throw erroHttp(400, "Tipo de etapa inválido.");
+    }
+    if (!Number.isInteger(dados.tempo_planejado) || dados.tempo_planejado < 1) {
+        throw erroHttp(400, "tempo_planejado deve ser um inteiro positivo em minutos.");
+    }
+    if (dados.status !== undefined && dados.status !== "Planejada") {
+        throw erroHttp(400, "Uma nova etapa deve ser cadastrada como Planejada.");
+    }
+
+    await exigirProjeto(projId);
     return etapasRepository.cadastrar({
         proj_id: projId,
         tipo: dados.tipo,
@@ -71,41 +67,29 @@ async function cadastrar(dados) {
 }
 
 function listar(projId) {
-    if (projId === undefined) {
-        return etapasRepository.listar();
-    }
-    return etapasRepository.listar(validarId(projId, "proj_id"));
+    return etapasRepository.listar(
+        projId === undefined ? undefined : validarId(projId, "proj_id")
+    );
 }
 
 async function listarPorProjeto(projId) {
     const id = validarId(projId, "proj_id");
-    const projeto = await etapasRepository.buscarProjetoPorId(id);
-    if (!projeto) {
-        throw erroHttp(404, "Projeto não encontrado.");
-    }
+    await exigirProjeto(id);
     return etapasRepository.listar(id);
 }
 
 async function buscarPorId(id) {
-    const etapa = await etapasRepository.buscarPorId(validarId(id));
-    if (!etapa) {
-        throw erroHttp(404, "Etapa não encontrada.");
-    }
-    return etapa;
+    return exigirEtapa(validarId(id));
 }
 
 async function listarProjetoAberto(projId) {
     const id = validarId(projId, "proj_id");
-    const projeto = await etapasRepository.buscarProjetoPorId(id);
-    if (!projeto) {
-        throw erroHttp(404, "Projeto não encontrado.");
-    }
+    await exigirProjeto(id);
     return etapasRepository.listProjetoAberto(id);
 }
 
 async function buscarExecAberta(id) {
-    const etapaId = validarId(id);
-    const etapa = await etapasRepository.buscarExecAberta(etapaId);
+    const etapa = await etapasRepository.buscarExecAberta(validarId(id));
     if (!etapa) {
         throw erroHttp(404, "Etapa não encontrada ou sem execução aberta.");
     }
@@ -114,158 +98,137 @@ async function buscarExecAberta(id) {
 
 async function editarPlanejamento(id, dados) {
     const etapaId = validarId(id);
-    validarCampos(dados, camposPlanejamento);
-    if (Object.keys(dados).length === 0) {
+    validarObjeto(dados);
+
+    const permitidos = ["tipo", "tempo_planejado"];
+    if (
+        Object.keys(dados).length === 0 ||
+        Object.keys(dados).some((campo) => !permitidos.includes(campo))
+    ) {
         throw erroHttp(400, "Informe tipo e/ou tempo_planejado para atualizar.");
     }
-    if (dados.tipo !== undefined) {
-        validarTipo(dados.tipo);
+    if (dados.tipo !== undefined && !tiposEtapa.includes(dados.tipo)) {
+        throw erroHttp(400, "Tipo de etapa inválido.");
     }
-    if (dados.tempo_planejado !== undefined) {
-        validarTempoPlanejado(dados.tempo_planejado);
+    if (
+        dados.tempo_planejado !== undefined &&
+        (!Number.isInteger(dados.tempo_planejado) || dados.tempo_planejado < 1)
+    ) {
+        throw erroHttp(400, "tempo_planejado deve ser um inteiro positivo em minutos.");
     }
 
     return etapasRepository.iniciarTransacao(async (transaction) => {
         const etapa = await exigirEtapa(etapaId, transaction);
         if (etapa.status !== "Planejada") {
-            throw erroHttp(409, "Só é possível editar o planejamento de uma etapa planejada.");
+            throw erroHttp(409, "Só é possível editar uma etapa planejada.");
         }
         await etapasRepository.atualizar(etapaId, dados, { transaction });
         return etapasRepository.buscarPorId(etapaId, undefined, { transaction });
     });
 }
 
-async function iniciarEtapa(id) {
+async function mudarStatus(id, configuracao) {
     const etapaId = validarId(id);
+
     return etapasRepository.iniciarTransacao(async (transaction) => {
         const etapa = await exigirEtapa(etapaId, transaction);
-        if (etapa.status !== "Planejada") {
-            throw erroHttp(409, "A etapa só pode ser iniciada quando estiver planejada.");
+        if (etapa.status !== configuracao.de) {
+            throw erroHttp(409, configuracao.erroStatus);
         }
-        const execucaoAberta = await etapasRepository.buscarExecucaoAberta(etapaId, { transaction });
-        if (execucaoAberta) {
+
+        const execucao = await etapasRepository.buscarExecucaoAberta(etapaId, {
+            transaction,
+        });
+        if (configuracao.motivo && !execucao) {
+            throw erroHttp(409, "A etapa em andamento não possui execução aberta.");
+        }
+        if (configuracao.abrir && execucao) {
             throw erroHttp(409, "A etapa já possui uma execução aberta.");
         }
 
         const agora = new Date();
-        await etapasRepository.criarExecucao(etapaId, agora, { transaction });
-        await etapasRepository.atualizar(
-            etapaId,
-            { status: "Em andamento", data_inicio: agora },
-            { transaction }
-        );
+        if (configuracao.abrir) {
+            await etapasRepository.criarExecucao(etapaId, agora, { transaction });
+        }
+        if (configuracao.motivo) {
+            const [atualizadas] = await etapasRepository.encerrarExecucao(
+                execucao.execucao_id,
+                agora,
+                configuracao.motivo,
+                { transaction }
+            );
+            if (atualizadas !== 1) {
+                throw erroHttp(409, "A execução já foi encerrada.");
+            }
+        }
+
+        const dados = { status: configuracao.para };
+        if (configuracao.inicio) dados.data_inicio = agora;
+        if (configuracao.fim) dados.data_fim = agora;
+        await etapasRepository.atualizar(etapaId, dados, { transaction });
         return etapasRepository.buscarPorId(etapaId, undefined, { transaction });
     });
 }
 
-async function pausarEtapa(id) {
-    const etapaId = validarId(id);
-    return etapasRepository.iniciarTransacao(async (transaction) => {
-        const etapa = await exigirEtapa(etapaId, transaction);
-        if (etapa.status !== "Em andamento") {
-            throw erroHttp(409, "Só é possível pausar uma etapa em andamento.");
-        }
-        const execucao = await etapasRepository.buscarExecucaoAberta(etapaId, { transaction });
-        if (!execucao) {
-            throw erroHttp(409, "A etapa em andamento não possui execução aberta.");
-        }
-
-        const agora = new Date();
-        const [atualizadas] = await etapasRepository.encerrarExecucao(
-            execucao.execucao_id,
-            agora,
-            "Pausa",
-            { transaction }
-        );
-        if (atualizadas !== 1) {
-            throw erroHttp(409, "A execução já foi encerrada.");
-        }
-        await etapasRepository.atualizar(etapaId, { status: "Pausada" }, { transaction });
-        return etapasRepository.buscarPorId(etapaId, undefined, { transaction });
+function iniciarEtapa(id) {
+    return mudarStatus(id, {
+        de: "Planejada",
+        para: "Em andamento",
+        abrir: true,
+        inicio: true,
+        erroStatus: "A etapa só pode ser iniciada quando estiver planejada.",
     });
 }
 
-async function retomarEtapa(id) {
-    const etapaId = validarId(id);
-    return etapasRepository.iniciarTransacao(async (transaction) => {
-        const etapa = await exigirEtapa(etapaId, transaction);
-        if (etapa.status !== "Pausada") {
-            throw erroHttp(409, "Só é possível retomar uma etapa pausada.");
-        }
-        const execucaoAberta = await etapasRepository.buscarExecucaoAberta(etapaId, { transaction });
-        if (execucaoAberta) {
-            throw erroHttp(409, "A etapa já possui uma execução aberta.");
-        }
-
-        await etapasRepository.criarExecucao(etapaId, new Date(), { transaction });
-        await etapasRepository.atualizar(
-            etapaId,
-            { status: "Em andamento" },
-            { transaction }
-        );
-        return etapasRepository.buscarPorId(etapaId, undefined, { transaction });
+function pausarEtapa(id) {
+    return mudarStatus(id, {
+        de: "Em andamento",
+        para: "Pausada",
+        motivo: "Pausa",
+        erroStatus: "Só é possível pausar uma etapa em andamento.",
     });
 }
 
-async function concluirEtapa(id) {
-    const etapaId = validarId(id);
-    return etapasRepository.iniciarTransacao(async (transaction) => {
-        const etapa = await exigirEtapa(etapaId, transaction);
-        if (etapa.status !== "Em andamento") {
-            throw erroHttp(409, "Só é possível concluir uma etapa em andamento.");
-        }
-        const execucao = await etapasRepository.buscarExecucaoAberta(etapaId, { transaction });
-        if (!execucao) {
-            throw erroHttp(409, "A etapa em andamento não possui execução aberta.");
-        }
+function retomarEtapa(id) {
+    return mudarStatus(id, {
+        de: "Pausada",
+        para: "Em andamento",
+        abrir: true,
+        erroStatus: "Só é possível retomar uma etapa pausada.",
+    });
+}
 
-        const agora = new Date();
-        const [atualizadas] = await etapasRepository.encerrarExecucao(
-            execucao.execucao_id,
-            agora,
-            "Finalizado",
-            { transaction }
-        );
-        if (atualizadas !== 1) {
-            throw erroHttp(409, "A execução já foi encerrada.");
-        }
-        await etapasRepository.atualizar(
-            etapaId,
-            { status: "Concluída", data_fim: agora },
-            { transaction }
-        );
-        return etapasRepository.buscarPorId(etapaId, undefined, { transaction });
+function concluirEtapa(id) {
+    return mudarStatus(id, {
+        de: "Em andamento",
+        para: "Concluída",
+        motivo: "Finalizado",
+        fim: true,
+        erroStatus: "Só é possível concluir uma etapa em andamento.",
     });
 }
 
 async function consultarTempo(id) {
-    const etapaId = validarId(id);
-    const etapa = await exigirEtapa(etapaId);
-    const execucoes = await etapasRepository.listarExecucoes(etapaId);
+    const etapa = await exigirEtapa(validarId(id));
+    const execucoes = await etapasRepository.listarExecucoes(etapa.etapa_id);
     const agora = Date.now();
-    let totalMilissegundos = 0;
-    let emAndamento = false;
-
-    for (const execucao of execucoes) {
+    const totalMs = execucoes.reduce((total, execucao) => {
         const inicio = new Date(execucao.data_inicio).getTime();
         const fim = execucao.data_fim
             ? new Date(execucao.data_fim).getTime()
             : agora;
-        if (Number.isFinite(inicio) && Number.isFinite(fim) && fim >= inicio) {
-            totalMilissegundos += fim - inicio;
-        }
-        if (!execucao.data_fim) {
-            emAndamento = true;
-        }
-    }
+        return Number.isFinite(inicio) && Number.isFinite(fim) && fim >= inicio
+            ? total + fim - inicio
+            : total;
+    }, 0);
+    const totalSegundos = totalMs / 1000;
 
-    const totalSegundos = totalMilissegundos / 1000;
     return {
         etapa_id: etapa.etapa_id,
         tempo_total_segundos: Math.round(totalSegundos),
         tempo_total_minutos: Number((totalSegundos / 60).toFixed(2)),
         tempo_planejado_minutos: etapa.tempo_planejado,
-        em_andamento: emAndamento,
+        em_andamento: execucoes.some((execucao) => !execucao.data_fim),
     };
 }
 
