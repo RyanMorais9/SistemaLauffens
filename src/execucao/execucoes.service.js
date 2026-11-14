@@ -8,7 +8,7 @@ function erroHttp(status, mensagem) {
 
 function validarId(id, nome) {
     const numero = Number(id);
-    if (!Number.isInteger(numero) || numero < 1) {
+    if (!["string", "number"].includes(typeof id) || !/^\d+$/.test(String(id)) || !Number.isSafeInteger(numero) || numero < 1) {
         throw erroHttp(400, `${nome} deve ser um inteiro positivo.`);
     }
     return numero;
