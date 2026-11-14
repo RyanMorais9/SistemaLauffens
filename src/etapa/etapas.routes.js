@@ -8,6 +8,7 @@ router.post("/", authConfig.requireJWTAuth, authConfig.exigirAdministrativo, con
 router.get("/", authConfig.requireJWTAuth, controller.listar);
 router.get("/projeto/aberto/:projetoId", authConfig.requireJWTAuth, controller.listarProjetoAberto);
 router.get("/projeto/:projetoId", authConfig.requireJWTAuth, controller.listarPorProjeto);
+router.post("/projeto/:projetoId/concluir", authConfig.requireJWTAuth, controller.finalizarProjeto);
 router.get("/execucao/aberta/:id", authConfig.requireJWTAuth, controller.buscarExecAberta);
 router.get("/:id/tempo", authConfig.requireJWTAuth, controller.consultarTempo);
 router.post("/:id/iniciar", authConfig.requireJWTAuth, controller.iniciarEtapa);

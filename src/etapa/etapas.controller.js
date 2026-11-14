@@ -38,10 +38,10 @@ function executar(acao, statusSucesso = 200) {
 }
 
 const cadastrar = executar((req) => etapaService.cadastrar(req.body), 201);
-const listar = executar((req) => etapaService.listar());
+const listar = executar((req) => etapaService.listar(req.query.proj_id, req.query));
 const buscarPorId = executar((req) => etapaService.buscarPorId(req.params.id));
 const listarPorProjeto = executar((req) =>
-    etapaService.listarPorProjeto(req.params.projetoId)
+    etapaService.listarPorProjeto(req.params.projetoId, req.query)
 );
 const listarProjetoAberto = executar((req) =>
     etapaService.listarProjetoAberto(req.params.projetoId)
@@ -56,6 +56,7 @@ const pausarEtapa = executar((req) => etapaService.pausarEtapa(req.params.id));
 const retomarEtapa = executar((req) => etapaService.retomarEtapa(req.params.id));
 const concluirEtapa = executar((req) => etapaService.concluirEtapa(req.params.id));
 const consultarTempo = executar((req) => etapaService.consultarTempo(req.params.id));
+const finalizarProjeto = executar((req) => etapaService.finalizarProjeto(req.params.projetoId));
 
 module.exports = {
     cadastrar,
@@ -71,4 +72,5 @@ module.exports = {
     retomarEtapa,
     concluirEtapa,
     consultarTempo,
+    finalizarProjeto,
 };
