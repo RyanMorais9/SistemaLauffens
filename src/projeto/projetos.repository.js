@@ -1,8 +1,4 @@
-const projeto = require("../../database/models/projeto.model.js");
-const cliente = require("../../database/models/cliente.model.js");
-const etapa = require("../../database/models/etapa.model.js");
-const execucao = require("../../database/models/execucao.model.js");
-const sequelize = require("../../database/connection.js");
+const { projeto, cliente, etapa, execucao, sequelize } = require("../../database/models");
 
 async function cadastrar(dados, options = {}){
     return projeto.create(dados, options);

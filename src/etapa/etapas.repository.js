@@ -1,8 +1,4 @@
-const etapa = require("../../database/models/etapa.model.js");
-const execucao = require("../../database/models/execucao.model.js");
-const projeto = require("../../database/models/projeto.model.js");
-const projeto_user = require("../../database/models/projeto_user.model.js");
-const sequelize = require("../../database/connection.js");
+const { etapa, execucao, projeto, projeto_user, sequelize } = require("../../database/models");
 
 const atributosEtapa = [
     "etapa_id",
