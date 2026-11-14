@@ -57,7 +57,47 @@ Requisitos relacionados: RF03, RF04, RF07 a RF11, RF13, RF18, RF21 e RF23.
 
 Não oferecer edição livre dos tempos e valores calculados no cadastro comum. Exclusão de projetos não está prevista nos requisitos consultados.
 
-**Decisão pendente:** RF21 permite informar o valor-base depois do cadastro, mas o SQL atual exige `valor_base NOT NULL` e positivo. Escolher entre exigir esse valor ao cadastrar ou ajustar o banco para permitir preenchimento posterior. Não usar zero como substituto, pois o CHECK o rejeita.
+O cadastro aceita a ausência de `valor_base`, representada por `null` no model. Quando informado, o valor deve ser positivo e conter até duas casas decimais. O primeiro preenchimento pode ocorrer durante a produção ou após seu término, antes da conclusão financeira. Um valor já preenchido só pode ser alterado antes do início. Projetos concluídos ou cancelados não podem ser editados.
+
+### API de projetos
+
+Rotas de consulta exigem JWT. Cadastro, edição, valor-base e gerenciamento de status exigem também perfil Administrativo.
+
+| Método e rota | Comportamento |
+|---|---|
+| `POST /projetos` | Cadastra projeto e as quatro etapas em uma única transação. |
+| `GET /projetos` | Lista projetos com cliente, etapas, etapa atual e tempos acumulados. |
+| `GET /projetos/:id` | Retorna o mesmo acompanhamento para um projeto. |
+| `PATCH /projetos/:id` | Edita nome, porte, prazo e valor-base, respeitando o estado do projeto. O planejamento das etapas é editado pelas rotas de etapas. |
+| `POST /projetos/:id` | Informa `valor_base`. |
+| `PUT /projetos/:id` | Recebe `status` e valida a transição. |
+
+Exemplo de cadastro (tempos em minutos):
+
+```json
+{
+  "nome": "Cozinha planejada",
+  "cliente_id": 1,
+  "porte": "Médio",
+  "prazo_planejado": "2027-03-20",
+  "etapas": [
+    { "tipo": "Corte", "tempo_planejado": 270 },
+    { "tipo": "Fitagem", "tempo_planejado": 180 },
+    { "tipo": "Refinamento", "tempo_planejado": 180 },
+    { "tipo": "Embalamento", "tempo_planejado": 120 }
+  ]
+}
+```
+
+As quatro etapas são obrigatórias, sem tipos duplicados. Se qualquer gravação falhar, o cadastro inteiro é desfeito. O cliente precisa existir. `valor_base` é opcional no cadastro; não envie zero como substituto.
+
+Filtros de `GET /projetos`: `status`, `porte`, `data_inicio`, `data_fim`, `ordenar_por=tempo|data_inicio` e `ordem=asc|desc`. Datas usam dias em UTC, incluindo o dia final. A ordenação por tempo considera os períodos trabalhados dentro do intervalo selecionado; o total histórico permanece em `tempo_total_segundos`.
+
+O acompanhamento calcula o status `Atrasado` ao consultar, se o prazo de entrega já passou ou uma etapa ultrapassou seu tempo planejado. Isso não dispara notificações nem depende de uma tarefa em segundo plano. O filtro de status usa esse mesmo cálculo. Projetos concluídos e cancelados preservam seu status.
+
+O início permanece automático pela primeira etapa. Não é permitido voltar a Planejado após haver execução, iniciar manualmente ou marcar Concluído pelo gerenciamento de status. O cancelamento é definitivo: encerra períodos abertos como Pausa e deixa a etapa correspondente Pausada, preservando seu histórico, na mesma transação. Um projeto em atraso não pode receber status Planejado/Em andamento sem corrigir a causa do atraso.
+
+A conclusão automática permanece em `etapas.service.js`. Se faltar apenas o valor-base, a produção pode terminar e a resposta identifica a pendência; depois de informar o valor, `POST /etapas/projeto/:projetoId/concluir` repete os cálculos e preserva a data original do fim da produção. Funcionários vinculados são obrigatórios desde o início.
 
 ### Participação no projeto — projeto_user
 
@@ -71,7 +111,19 @@ Requisitos relacionados: RF19, RF20 e RF22.
 
 O mesmo usuário não pode ser vinculado duas vezes ao mesmo projeto (`UNIQUE(proj_id, usuario_id)`). As referências não devem ser recalculadas automaticamente quando o salário atual do usuário mudar.
 
-**Decisão pendente:** definir se será permitido remover ou alterar participantes depois do início da produção e como preservar o cálculo histórico. Remoção de vínculo não deve ser um DELETE liberado sem essa regra.
+Os quatro arquivos de `src/projeto_user/` implementam os vínculos, registrados no `index.js` em `/projetos-usuarios`. Todas as rotas exigem JWT e perfil Administrativo, pois apresentam referências salariais.
+
+| Método e rota | Comportamento |
+|---|---|
+| `POST /projetos-usuarios` | Recebe somente `proj_id` e `usuario_id`; vincula um marceneiro ativo e grava as referências atuais. |
+| `GET /projetos-usuarios/projeto/:projetoId` | Lista a equipe do projeto. |
+| `GET /projetos-usuarios/usuario/:usuarioId` | Lista participações do funcionário. |
+| `GET /projetos-usuarios/:id` | Consulta o vínculo por `proj_user_id`. |
+| `DELETE /projetos-usuarios/:id` | Remove o vínculo somente antes do início da produção. |
+
+Depois do início, a equipe fica congelada: não se permite adicionar, remover ou editar referências salariais. O sistema calcula `custo_hora_referencia = salario / horas_mensais`, arredondado em duas casas decimais conforme o model. Alterar o salário atual do funcionário não altera vínculos anteriores. Senhas não são incluídas nas consultas.
+
+Operações de equipe, início de etapa e cancelamento coordenam o bloqueio do projeto na transação, evitando remover o último funcionário ao mesmo tempo em que a produção inicia. Não há rota para enviar manualmente salário ou custo de referência.
 
 ### Etapa
 
@@ -86,7 +138,23 @@ Requisitos relacionados: RF03, RF05, RF06, RF09 e RF13.
 
 Tipos disponíveis: Corte, Fitagem, Refinamento e Embalamento. Um projeto não pode ter duas etapas do mesmo tipo. O tempo planejado deve ser positivo.
 
-O tempo realizado pode ser calculado pelas execuções; o SQL atual não possui uma coluna de tempo total na etapa. Não prever exclusão livre de etapas que já possuem histórico.
+O tempo realizado é calculado pelas execuções e consolidado em `tempo_total_segundos` na conclusão da etapa. Não prever exclusão livre de etapas que já possuem histórico.
+
+### API de etapas e execuções
+
+Todas as rotas de etapas e execuções exigem `Authorization: Bearer <token>`. Cadastro e edição do planejamento exigem perfil Administrativo.
+
+- `tempo_planejado` continua em **minutos**, agora entre `0.6` e `600000`, com até duas casas decimais. Isso representa de 0,01 a 10000 horas. Exemplo: 4,5 horas devem ser enviadas como `270` minutos.
+- `GET /etapas` e `GET /etapas/projeto/:projetoId` incluem identificação do projeto, tempo acumulado, tempo no período e indicação `excedeu_planejamento`.
+- Filtros: `proj_id` (na listagem geral), `porte`, `data_inicio`, `data_fim`, `ordenar_por=tempo|data_inicio`, `ordem=asc|desc`. Datas usam `AAAA-MM-DD`, em UTC; o dia final é incluído. São selecionadas etapas com períodos de trabalho que intersectam o intervalo. `tempo_periodo_segundos` contabiliza apenas a parte trabalhada dentro dele; `tempo_total_segundos` mantém o histórico completo.
+- Exemplo: `GET /etapas?data_inicio=2026-11-01&data_fim=2026-11-30&ordenar_por=tempo&ordem=desc`.
+- Iniciar, retomar ou concluir uma etapa exige ao menos um funcionário vinculado ao projeto. Sem vínculo, a operação retorna `409`, preservando o estado anterior. A conclusão da última etapa registra o fim da produção e retorna `finalizacao_projeto`, indicando se o projeto foi concluído ou se há outra pendência financeira.
+- `POST /etapas/projeto/:projetoId/concluir` permite repetir a finalização após resolver a pendência. Exige todas as etapas concluídas, calcula os valores no servidor e preserva o horário original do fim da produção. Não recebe datas ou valores finais do cliente.
+- A alteração manual do status do projeto não permite `Concluído`, nem reabrir um projeto concluído.
+
+Os models em `database/models/` são a referência da implementação. `SistemaLauffens.sql` é um rascunho da estrutura.
+
+A indicação de tempo excedido fornece dados para as notificações; geração de avisos, envio push e central de notificações pertencem ao módulo de notificações, ainda pendente.
 
 ### Execução
 
