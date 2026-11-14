@@ -6,7 +6,6 @@ require("./database/models");
 const clientesRoutes = require("./src/cliente/clientes.routes.js");
 const etapasRoutes = require("./src/etapa/etapas.routes.js");
 const projetosRoutes = require("./src/projeto/projetos.routes.js");
-const projetosUsersRoutes = require("./src/projeto_user/projetos_users.routes.js");
 const execucoesRoutes = require("./src/execucao/execucoes.routes.js");
 const usuarioRoutes = require("./src/usuario/usuarios.routes.js");
 const authRoutes = require("./src/auth/auth.routes.js");
@@ -24,7 +23,6 @@ app.use(passport.initialize());
 app.use("/clientes", clientesRoutes);
 app.use("/etapas", etapasRoutes);
 app.use("/projetos", projetosRoutes);
-app.use("/projetos-usuarios", projetosUsersRoutes);
 app.use("/execucoes", execucoesRoutes);
 app.use("/usuarios", usuarioRoutes)
 

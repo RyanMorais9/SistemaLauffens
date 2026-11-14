@@ -111,7 +111,7 @@ Requisitos relacionados: RF19, RF20 e RF22.
 
 O mesmo usuário não pode ser vinculado duas vezes ao mesmo projeto (`UNIQUE(proj_id, usuario_id)`). As referências não devem ser recalculadas automaticamente quando o salário atual do usuário mudar.
 
-Os quatro arquivos de `src/projeto_user/` implementam os vínculos, registrados no `index.js` em `/projetos-usuarios`. Todas as rotas exigem JWT e perfil Administrativo, pois apresentam referências salariais.
+A implementação pronta de `src/projeto_user/` foi revertida para que o módulo seja construído passo a passo pelo autor. O model foi mantido; os quatro arquivos de routes, controller, service e repository estão vazios e ainda não estão conectados ao `index.js`. A tabela abaixo é um roteiro de rotas propostas, ainda não disponíveis. As permissões previstas são JWT e perfil Administrativo, pois as consultas apresentam referências salariais.
 
 | Método e rota | Comportamento |
 |---|---|
@@ -121,9 +121,9 @@ Os quatro arquivos de `src/projeto_user/` implementam os vínculos, registrados 
 | `GET /projetos-usuarios/:id` | Consulta o vínculo por `proj_user_id`. |
 | `DELETE /projetos-usuarios/:id` | Remove o vínculo somente antes do início da produção. |
 
-Depois do início, a equipe fica congelada: não se permite adicionar, remover ou editar referências salariais. O sistema calcula `custo_hora_referencia = salario / horas_mensais`, arredondado em duas casas decimais conforme o model. Alterar o salário atual do funcionário não altera vínculos anteriores. Senhas não são incluídas nas consultas.
+Regra planejada para a implementação: depois do início, a equipe fica congelada, impedindo adicionar, remover ou editar referências salariais. O sistema deverá calcular `custo_hora_referencia = salario / horas_mensais`, arredondado em duas casas decimais conforme o model. Alterar o salário atual do funcionário não altera vínculos anteriores. Senhas não são incluídas nas consultas.
 
-Operações de equipe, início de etapa e cancelamento coordenam o bloqueio do projeto na transação, evitando remover o último funcionário ao mesmo tempo em que a produção inicia. Não há rota para enviar manualmente salário ou custo de referência.
+As operações de equipe deverão coordenar o bloqueio do projeto na transação com o início de etapa e o cancelamento, evitando remover o último funcionário ao mesmo tempo em que a produção inicia. Não deverá existir rota para enviar manualmente salário ou custo de referência.
 
 ### Etapa
 
