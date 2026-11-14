@@ -39,7 +39,7 @@ const projeto = sequelize.define("projeto", {
     },
     valor_base: {
         type: DataTypes.DECIMAL(9, 2),
-        allowNull: false,
+        allowNull: true,
         validate: {
             isDecimal: true,
             min: {
@@ -53,8 +53,8 @@ const projeto = sequelize.define("projeto", {
         validate: {
             isDecimal: true,
             min: {
-                args: [0.01],
-                msg: "O preço deve ser um valor maior que zero."
+                args: [0],
+                msg: "O custo de mão de obra não pode ser negativo."
             }
         }
     },

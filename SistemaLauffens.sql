@@ -58,7 +58,7 @@ create table projeto(
     data_inicio timestamptz,
     data_fim timestamptz check(data_fim is null or (data_inicio is not null and data_fim >= data_inicio)),
     valor_base numeric(9, 2) check(valor_base > 0) not null,
-    custo_mao_de_obra_final numeric(9, 2) check(custo_mao_de_obra_final > 0),
+    custo_mao_de_obra_final numeric(9, 2) check(custo_mao_de_obra_final >= 0),
     valor_final numeric(9, 2) check(valor_final > 0),
 
     constraint fk_projeto_cliente foreign key(cliente_id) references cliente(cliente_id),
@@ -88,7 +88,8 @@ create table etapa(
     status status_etapa not null,
     data_inicio timestamptz,
     data_fim timestamptz check(data_fim is null or (data_inicio is not null and data_fim >= data_inicio)),
-    tempo_planejado integer check(tempo_planejado > 0) not null, /* minutos */
+    tempo_planejado numeric(10, 2) check(tempo_planejado between 0.6 and 600000) not null, /* minutos: 0,01 a 10000 horas */
+    tempo_total_segundos numeric(16, 3) check(tempo_total_segundos >= 0),
 
     constraint fk_etapa_proj foreign key(proj_id) references projeto(proj_id),
     constraint uq_proj_etapa unique(proj_id, tipo) /* permite cadastrar Corte, Fitagem, Refinamento e Embalamento para o mesmo projeto, mas impede duas etapas de Corte no mesmo projeto. */

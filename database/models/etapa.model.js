@@ -27,12 +27,17 @@ const etapa = sequelize.define("etapa", {
         type: DataTypes.DATE
     },
     tempo_planejado: {
-        type: DataTypes.INTEGER,
+        type: DataTypes.DECIMAL(10, 2),
         allowNull: false,
         validate: {
-            isInt: true,
-            min: 1,
+            isDecimal: true,
+            min: 0.6,
+            max: 600000,
         },
+    },
+    tempo_total_segundos: {
+        type: DataTypes.DECIMAL(16, 3),
+        validate: { min: 0 },
     },
 }, {
     tableName: "etapa",
