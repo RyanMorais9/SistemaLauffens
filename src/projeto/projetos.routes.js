@@ -8,8 +8,6 @@ router.get("/:id", authConfig.requireJWTAuth, projetosController.buscarPorId);
 router.get("/", authConfig.requireJWTAuth, projetosController.listar);
 router.patch("/:id", authConfig.requireJWTAuth, authConfig.exigirAdministrativo, projetosController.editar);
 router.post("/:id", authConfig.requireJWTAuth, authConfig.exigirAdministrativo, projetosController.registrarVB);
-router.put("/", authConfig.requireJWTAuth, authConfig.exigirAdministrativo, projetosController.gerenciarStatus);
-router.post("", projetosController.registrarInicio);
-router.put("", projetosController.finalizar);
+router.put("/:id", authConfig.requireJWTAuth, authConfig.exigirAdministrativo, projetosController.gerenciarStatus);
 
 module.exports = router;

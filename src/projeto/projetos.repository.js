@@ -1,11 +1,36 @@
-const projeto = require("../../database/models/projeto.model.js");
+const { projeto, cliente, etapa, execucao, sequelize } = require("../../database/models");
 
-async function cadastrar(dados){
-    return projeto.create(dados);
+async function cadastrar(dados, options = {}){
+    return projeto.create(dados, options);
 }
 
-async function buscarPorId(id) {
-    return projeto.findByPk(id);
+async function buscarPorId(id, options = {}) {
+    return projeto.findByPk(id, options);
+}
+
+function iniciarTransacao(callback) {
+    return sequelize.transaction(callback);
+}
+
+function buscarClientePorId(id, options = {}) {
+    return cliente.findByPk(id, options);
+}
+
+function cadastrarEtapas(dados, options = {}) {
+    return etapa.bulkCreate(dados, { ...options, validate: true });
+}
+
+function incluirAcompanhamento() {
+    return [
+        { model: cliente, as: "cliente", attributes: ["cliente_id", "nome"] },
+        { model: etapa, as: "etapa", include: [
+            { model: execucao, as: "execucao", attributes: ["execucao_id", "data_inicio", "data_fim", "motivo_encerramento"] },
+        ] },
+    ];
+}
+
+function buscarAcompanhamento(id) {
+    return projeto.findByPk(id, { include: incluirAcompanhamento() });
 }
 
 async function listar(filtros = {}) {
@@ -18,45 +43,21 @@ async function listar(filtros = {}) {
         where.porte = filtros.porte;
     }
 
-    return projeto.findAll({where, order: [["proj_id", "ASC"]]});
+    return projeto.findAll({where, include: incluirAcompanhamento(), order: [["proj_id", "ASC"]]});
 }
 
-async function editar(id, dados) {
-    const projetoFound = await projeto.findByPk(id);
+async function editar(id, dados, options = {}) {
+    const projetoFound = await projeto.findByPk(id, options);
     if(!projetoFound) return null;
-    return projetoFound.update(dados);
+    return projetoFound.update(dados, options);
 }
 
-async function registrarVB(id, valor) { //VB = valor base
-    const projetoFound = await projeto.findByPk(id);
-    if(!projetoFound) return null;
-    return projetoFound.update({valor_base: valor});
+async function registrarVB(id, valor, options = {}) { //VB = valor base
+    return editar(id, { valor_base: valor }, options);
 }
 
-async function gerenciarStatus(id, alteracoes) {
-    const projetoFound = await projeto.findByPk(id);
-    if(!projetoFound) return null;
-    return projetoFound.update(alteracoes)
-}
-
-async function registrarInicio(id, inicio) {
-    const projetoFound = await projeto.findByPk(id);
-    if(!projetoFound) return null;
-
-    if(projetoFound.data_inicio !== null) return projetoFound;
-    return projetoFound.update({data_inicio: inicio, status: "Em andamento"});
-}
-
-async function finalizar(id, dataFim, custoMaoDeObra, valorFinal) {
-    const projetoFound = await projeto.findByPk(id);
-    if(!projetoFound) return null;
-
-    return projetoFound.update({
-        data_fim: dataFim,
-        custo_mao_de_obra_final: custoMaoDeObra,
-        valor_final: valorFinal,
-        status: "Concluído"
-    })
+async function gerenciarStatus(id, alteracoes, options = {}) {
+    return editar(id, alteracoes, options);
 }
 
 module.exports = {
@@ -66,6 +67,8 @@ module.exports = {
     editar,
     registrarVB,
     gerenciarStatus,
-    registrarInicio,
-    finalizar
+    iniciarTransacao,
+    buscarClientePorId,
+    cadastrarEtapas,
+    buscarAcompanhamento
 };
