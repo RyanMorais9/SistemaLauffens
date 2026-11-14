@@ -1,4 +1,5 @@
-const { execucao, etapa } = require("../../database/models");
+const execucao = require("../../database/models/execucao.model.js");
+const etapa = require("../../database/models/etapa.model.js");
 
 const atributosExecucao = [
     "execucao_id",
