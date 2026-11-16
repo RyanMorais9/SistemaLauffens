@@ -154,7 +154,7 @@ Todas as rotas de etapas e execuções exigem `Authorization: Bearer <token>`. C
 
 Os models em `database/models/` são a referência da implementação. `SistemaLauffens.sql` é um rascunho da estrutura.
 
-A indicação de tempo excedido fornece dados para as notificações; geração de avisos, envio push e central de notificações pertencem ao módulo de notificações, ainda pendente.
+A conclusão de uma etapa gera notificações para os participantes ativos do projeto, na mesma transação. As rotas exigem JWT e permitem acessar somente as notificações do próprio usuário: `GET /notificacoes/usuario/:usuarioId` (filtro opcional `?lida=true|false`), `GET /notificacoes/usuario/:usuarioId/nao-lidas/contagem` e `PATCH /notificacoes/usuario/:usuarioId/:notificacaoId/lida`. A geração de avisos de atraso e o envio push ainda não estão implementados.
 
 ### Execução
 

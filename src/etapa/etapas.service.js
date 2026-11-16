@@ -1,4 +1,5 @@
 const etapasRepository = require("./etapas.repository");
+const notificacoesService = require("../notificacao/notificacoes.service");
 
 const tiposEtapa = ["Corte", "Fitagem", "Refinamento", "Embalamento"];
 const camposPlanejamento = ["tipo", "tempo_planejado"];
@@ -405,6 +406,7 @@ async function concluirEtapa(id) {
         );
         const finalizacao = await finalizarProjetoSeCompleto(projeto, transaction);
         const resultado = await etapasRepository.buscarPorId(etapaId, undefined, { transaction });
+        await notificacoesService.gerarNotificacoesEtapaConcluida(resultado, transaction);
         return { ...resultado.toJSON(), finalizacao_projeto: finalizacao };
     });
 }

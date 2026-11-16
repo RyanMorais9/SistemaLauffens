@@ -9,6 +9,7 @@ const projetosRoutes = require("./src/projeto/projetos.routes.js");
 const execucoesRoutes = require("./src/execucao/execucoes.routes.js");
 const usuarioRoutes = require("./src/usuario/usuarios.routes.js");
 const projUserRoutes = require("./src/projeto_user/projetos_users.routes.js");
+const notificacoesRoutes = require("./src/notificacao/notificacoes.routes.js");
 const authRoutes = require("./src/auth/auth.routes.js");
 const {configureJwtStrategy} = require("./src/auth/auth.config.js");
 
@@ -27,6 +28,7 @@ app.use("/projetos", projetosRoutes);
 app.use("/execucoes", execucoesRoutes);
 app.use("/usuarios", usuarioRoutes);
 app.use("/projetos-usuarios", projUserRoutes);
+app.use("/notificacoes", notificacoesRoutes);
 
 if (require.main === module) app.listen(PORT, () => {
     console.log(`Servidor rodando em http://localhost:${PORT}`);
