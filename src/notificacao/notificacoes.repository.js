@@ -1,5 +1,5 @@
 const { Op } = require("sequelize");
-const { notificacao, usuario, projeto, cliente, sequelize } = require("../../database/models");
+const { notificacao, usuario, projeto, cliente, etapa, execucao, sequelize } = require("../../database/models");
 
 class NotificacoesRepository {
     criarEmLote(dados, transaction) {
@@ -87,10 +87,35 @@ class NotificacoesRepository {
         });
     }
 
-    processarFila(operacao) {
+    listarProjetosParaVerificarAtraso(transaction) {
+        return projeto.findAll({
+            where: { status: { [Op.notIn]: ["Concluído", "Cancelado"] } },
+            attributes: ["proj_id"], order: [["proj_id", "ASC"]], transaction,
+        });
+    }
+
+    async buscarProjetoParaVerificarAtraso(projId, transaction) {
+        const encontrado = await projeto.findByPk(projId, { transaction, lock: transaction.LOCK.UPDATE });
+        if (!encontrado || encontrado.status === "Cancelado") return null;
+        return projeto.findByPk(projId, {
+            include: [
+                { model: cliente, as: "cliente", attributes: ["nome"] },
+                { model: etapa, as: "etapa", include: [{ model: execucao, as: "execucao" }] },
+            ], transaction,
+        });
+    }
+
+    buscarAvisoDeAtraso(usuarioId, projId, etapaId, titulo, transaction) {
+        return notificacao.findOne({
+            where: { usuario_destinatario_id: usuarioId, proj_id: projId,
+                ...(etapaId === undefined ? {} : { etapa_id: etapaId }), tipo: "Atraso", titulo }, transaction,
+        });
+    }
+
+    processarFila(operacao, chave = 20261116) {
         return sequelize.transaction(async transaction => {
             const [[{ bloqueado }]] = await sequelize.query(
-                "SELECT pg_try_advisory_xact_lock(20261116) AS bloqueado", { transaction }
+                "SELECT pg_try_advisory_xact_lock(:chave) AS bloqueado", { replacements: { chave }, transaction }
             );
             if (!bloqueado) return;
             return operacao(transaction);

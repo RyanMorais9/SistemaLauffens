@@ -1,3 +1,4 @@
+const notificacoesAtrasos = require("../notificacao/notificacoes.atrasos.js");
 const etapasRepository = require("./etapas.repository");
 const notificacoesService = require("../notificacao/notificacoes.service");
 
@@ -404,6 +405,7 @@ async function concluirEtapa(id) {
         );
         const finalizacao = await finalizarProjetoSeCompleto(projeto, transaction);
         const resultado = await etapasRepository.buscarPorId(etapaId, undefined, { transaction });
+        await notificacoesAtrasos.gerarParaProjeto(projeto.proj_id, transaction, agora.getTime());
         await notificacoesService.gerarNotificacoesEtapaConcluida(resultado, transaction);
         return { ...resultado.toJSON(), finalizacao_projeto: finalizacao };
     });

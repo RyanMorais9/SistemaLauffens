@@ -3,6 +3,7 @@ const fs = require("node:fs");
 const path = require("node:path");
 const crypto = require("node:crypto");
 const repository = require("./notificacoes.repository.js");
+const atrasos = require("./notificacoes.atrasos.js");
 
 let chaves;
 let processamento;
@@ -105,9 +106,23 @@ async function enviarPendentes() {
 
 function iniciarProcessamento() {
     if (intervalo) return;
-    const executar = () => processarPendentes().catch(() => {
-        console.error("Não foi possível processar a fila de notificações push.");
-    });
+    let verificando = false;
+    const executar = async () => {
+        if (verificando) return;
+        verificando = true;
+        try {
+            await atrasos.verificarAtrasos();
+        } catch {
+            console.error("Não foi possível verificar os atrasos de produção.");
+        }
+        try {
+            await processarPendentes();
+        } catch {
+            console.error("Não foi possível processar a fila de notificações push.");
+        } finally {
+            verificando = false;
+        }
+    };
     executar();
     intervalo = setInterval(executar, 30000);
     intervalo.unref();

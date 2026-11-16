@@ -93,7 +93,7 @@ As quatro etapas são obrigatórias, sem tipos duplicados. Se qualquer gravaçã
 
 Filtros de `GET /projetos`: `status`, `porte`, `data_inicio`, `data_fim`, `ordenar_por=tempo|data_inicio` e `ordem=asc|desc`. Datas usam dias em UTC, incluindo o dia final. A ordenação por tempo considera os períodos trabalhados dentro do intervalo selecionado; o total histórico permanece em `tempo_total_segundos`.
 
-O acompanhamento calcula o status `Atrasado` ao consultar, se o prazo de entrega já passou ou uma etapa ultrapassou seu tempo planejado. Isso não dispara notificações nem depende de uma tarefa em segundo plano. O filtro de status usa esse mesmo cálculo. Projetos concluídos e cancelados preservam seu status.
+O acompanhamento calcula o status `Atrasado` ao consultar, se o prazo de entrega já passou ou uma etapa ultrapassou seu tempo planejado. Esse cálculo de consulta não depende de tarefa em segundo plano. Separadamente, o módulo de notificações verifica excedentes de tempo de execução a cada 30 segundos. O filtro de status usa esse mesmo cálculo. Projetos concluídos e cancelados preservam seu status.
 
 O início permanece automático pela primeira etapa. Não é permitido voltar a Planejado após haver execução, iniciar manualmente ou marcar Concluído pelo gerenciamento de status. O cancelamento é definitivo: encerra períodos abertos como Pausa e deixa a etapa correspondente Pausada, preservando seu histórico, na mesma transação. Um projeto em atraso não pode receber status Planejado/Em andamento sem corrigir a causa do atraso.
 
@@ -154,11 +154,11 @@ Todas as rotas de etapas e execuções exigem `Authorization: Bearer <token>`. C
 
 Os models em `database/models/` são a referência da implementação. `SistemaLauffens.sql` é um rascunho da estrutura.
 
-A conclusão de uma etapa gera notificações para todos os administradores ativos, dentro da transação de conclusão. As rotas exigem JWT, perfil Administrativo e acesso apenas ao próprio destinatário: `GET /notificacoes/usuario/:usuarioId` (filtro opcional `?lida=true|false`), `GET /notificacoes/usuario/:usuarioId/nao-lidas/contagem` e `PATCH /notificacoes/usuario/:usuarioId/:notificacaoId/lida`. O envio Web Push para navegador/PWA está implementado. A geração de avisos de atraso continua pendente.
+A conclusão de uma etapa gera notificações para todos os administradores ativos, dentro da transação de conclusão. As rotas exigem JWT, perfil Administrativo e acesso apenas ao próprio destinatário: `GET /notificacoes/usuario/:usuarioId` (filtro opcional `?lida=true|false`), `GET /notificacoes/usuario/:usuarioId/nao-lidas/contagem` e `PATCH /notificacoes/usuario/:usuarioId/:notificacaoId/lida`. O envio Web Push para navegador/PWA está implementado. Os avisos automáticos de excedente de tempo de execução também estão implementados (RF14).
 
 ### Mensagem de conclusão e notificações no celular
 
-O título e o corpo são montados uma única vez em `notificacoes.service.js` e salvos no banco. A central e o push usam esse mesmo conteúdo, por exemplo:
+O título e o corpo são montados uma única vez em `notificacoes.service.js` e salvos no banco. A API e o push usam esse mesmo conteúdo, por exemplo:
 
 > **Etapa Corte concluída**
 >
@@ -166,14 +166,7 @@ O título e o corpo são montados uma única vez em `notificacoes.service.js` e 
 
 Os nomes vêm do projeto e do cliente associados à etapa. A data é `etapa.data_fim`, formatada no fuso `America/Sao_Paulo`; não é o horário de envio do push. Fitagem utiliza a concordância “A Fitagem [...] foi finalizada”. O sistema salva o texto da conclusão, preservando os nomes históricos da mensagem se o cadastro mudar depois.
 
-Para habilitar no dispositivo:
-
-1. Execute o servidor normalmente com `npm start` ou `npm run dev`.
-2. Acesse `/notificacoes/ativar` no endereço do servidor, entre com uma conta administrativa e clique em **Ativar notificações neste dispositivo**.
-3. Autorize as notificações no navegador. No celular, use HTTPS; um endereço HTTP da rede local não atende aos requisitos de segurança do navegador. Localhost pode ser usado no desenvolvimento no próprio computador.
-4. Para iPhone/iPad compatível com Web Push, adicione o site à Tela de Início e abra por esse ícone antes de habilitar.
-
-A página oferece a central de avisos com filtro de lidas/não lidas, contador, atualização e marcação de leitura. O JWT permanece apenas em memória, sem ser salvo em localStorage, URL ou no service worker. Dados da API não são armazenados no cache offline. Sair da central não desativa o push; há um botão separado para desativar o dispositivo.
+A interface provisória de notificações foi removida. A ativação no dispositivo deverá ser integrada ao frontend do sistema: registrar `/notificacoes/sw.js`, solicitar a permissão do usuário, criar a inscrição pelo PushManager usando a chave pública abaixo e enviá-la à API autenticada. A listagem e a marcação de leitura também estão disponíveis pela API. O manifesto de instalação deverá ser definido no frontend.
 
 | Método e rota | Finalidade |
 |---|---|
@@ -185,7 +178,15 @@ Essas três rotas exigem JWT e perfil Administrativo. A inscrição é guardada 
 
 O envio usa `web-push`. Na primeira configuração local, as chaves VAPID são geradas uma única vez em `.push-keys.json`, com acesso restrito e ignorado pelo Git. Preserve esse arquivo entre reinícios. Em hospedagem com disco temporário, configure `VAPID_PUBLIC_KEY` e `VAPID_PRIVATE_KEY` nas variáveis do servidor, sem expor a chave privada ao navegador. `VAPID_SUBJECT` permite definir a URL ou e-mail de contato; por padrão é usada a URL deste repositório.
 
-As notificações são persistidas antes do envio. Somente depois do commit o processamento é acionado. Ao iniciar o servidor e a cada 30 segundos, `notificacoes.push.js` consulta a fila; um bloqueio do banco evita o processamento simultâneo por servidores diferentes. Avisos Pendente/Falhou das últimas 24 horas e com dispositivo cadastrado podem ser enviados. Falhas temporárias são tentadas novamente, inscrições expiradas são removidas e os avisos permanecem na central. `Enviada` indica aceitação pelo serviço de push, não confirmação de leitura no aparelho; a leitura usa `lida_em`. O service worker usa o ID da notificação como tag para substituir eventuais repetições visuais.
+As notificações são persistidas antes do envio. Somente depois do commit o processamento é acionado. Ao iniciar o servidor e a cada 30 segundos, `notificacoes.push.js` consulta a fila; um bloqueio do banco evita o processamento simultâneo por servidores diferentes. Avisos Pendente/Falhou das últimas 24 horas e com dispositivo cadastrado podem ser enviados. Falhas temporárias são tentadas novamente, inscrições expiradas são removidas e os avisos permanecem disponíveis pela API. `Enviada` indica aceitação pelo serviço de push, não confirmação de leitura no aparelho; a leitura usa `lida_em`. O service worker usa o ID da notificação como tag para substituir eventuais repetições visuais.
+
+### Avisos automáticos de atraso (RF14)
+
+Ao iniciar o servidor e a cada 30 segundos, `notificacoes.atrasos.js` compara o tempo efetivamente registrado com o planejado. Reutiliza `calcularTempo` das etapas: soma os períodos encerrados e a duração atual dos períodos abertos; o intervalo parado entre uma pausa e uma retomada não é somado. A verificação de rotina ignora projetos concluídos e cancelados. A conclusão de etapa também verifica o excedente na mesma transação, inclusive na última etapa, antes do envio dos avisos.
+
+Cada etapa gera um aviso quando ultrapassa seu próprio tempo planejado; o projeto gera outro quando o total ultrapassa a soma dos tempos planejados. Igualar o tempo não gera atraso. Cada administrador ativo recebe uma única notificação por etapa e uma pelo total do projeto, sem repetição a cada rodada, mesmo se já tiver marcado como lida ou se o planejamento for alterado depois. Novos administradores ativos podem receber os avisos na verificação seguinte. O aviso total mantém uma etapa de referência, conforme a obrigatoriedade do model atual, mas sua deduplicação considera o projeto, não essa etapa.
+
+As mensagens incluem cliente, projeto, etapa quando aplicável, minutos planejados e registrados, e o instante da identificação no horário de Brasília. São persistidas como `tipo: "Atraso"` e seguem a mesma fila de push dos avisos de conclusão. Bloqueios de transação evitam duplicação entre servidores e disputa com a conclusão da etapa. Esta verificação não altera o planejamento nem o status do projeto. O vencimento da data de entrega continua fazendo parte do cálculo de status existente; os novos avisos de RF14 se referem ao excedente de tempo efetivamente executado.
 
 ### Execução
 
@@ -231,7 +232,7 @@ Requisitos relacionados: RF14, RF24 e RF25.
 
 Uma lista vazia é um resultado normal; a interface deve informar que não há avisos. Não disponibilizar cadastro manual, edição livre de conteúdo ou exclusão como CRUD inicial. A geração e o envio são ações internas do sistema.
 
-**Decisão pendente:** o SQL exige `etapa_id` em toda notificação. Se um aviso de atraso do projeto puder existir sem etapa específica, ajustar essa obrigatoriedade no banco e no model.
+O aviso de atraso total do projeto mantém uma etapa de referência para respeitar o model atual; não foi necessário alterar models ou o SQL de rascunho.
 
 ### Dashboard e cálculos
 
