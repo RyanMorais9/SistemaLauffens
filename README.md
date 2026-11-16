@@ -127,7 +127,10 @@ Requisitos relacionados: RF14, RF24 e RF25.
 
 Uma lista vazia é um resultado normal; a interface deve informar que não há avisos. Não disponibilizar cadastro manual, edição livre de conteúdo ou exclusão como CRUD inicial. A geração e o envio são ações internas do sistema.
 
-**Decisão pendente:** o SQL exige `etapa_id` em toda notificação. Se um aviso de atraso do projeto puder existir sem etapa específica, ajustar essa obrigatoriedade no banco e no model.
+**Decisão pendente:** ^
+o SQL exige `etapa_id` em toda notificação. Se um aviso de atraso do projeto puder existir sem etapa específica, ajustar essa obrigatoriedade no banco e no model.
+
+Na implementação atual, concluir uma etapa gera notificações para os participantes ativos do projeto, dentro da mesma transação da conclusão. A API permite listar por usuário (`GET /api/notificacoes/usuario/:usuarioId`, com filtro opcional `?lida=true|false`), contar não lidas (`GET /api/notificacoes/usuario/:usuarioId/nao-lidas/contagem`) e marcar como lida (`PATCH /api/notificacoes/usuario/:usuarioId/:notificacaoId/lida`). A geração de avisos de atraso e o envio push ainda precisam ser implementados. Como as rotas atuais recebem o ID do usuário na URL e o servidor ainda não aplica autenticação, elas devem ser protegidas antes de expor dados em produção.
 
 ### Dashboard e cálculos
 

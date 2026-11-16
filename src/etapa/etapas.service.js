@@ -1,4 +1,5 @@
 const etapasRepository = require("./etapas.repository");
+const notificacoesService = require("../notificacao/notificacoes.service");
 
 const tiposEtapa = ["Corte", "Fitagem", "Refinamento", "Embalamento"];
 
@@ -166,7 +167,18 @@ async function mudarStatus(id, configuracao) {
         if (configuracao.inicio) dados.data_inicio = agora;
         if (configuracao.fim) dados.data_fim = agora;
         await etapasRepository.atualizar(etapaId, dados, { transaction });
-        return etapasRepository.buscarPorId(etapaId, undefined, { transaction });
+        const etapaAtualizada = await etapasRepository.buscarPorId(
+            etapaId,
+            undefined,
+            { transaction }
+        );
+        if (configuracao.notificarConclusao) {
+            await notificacoesService.gerarNotificacoesEtapaConcluida(
+                etapaAtualizada,
+                transaction
+            );
+        }
+        return etapaAtualizada;
     });
 }
 
@@ -204,6 +216,7 @@ function concluirEtapa(id) {
         para: "Concluída",
         motivo: "Finalizado",
         fim: true,
+        notificarConclusao: true,
         erroStatus: "Só é possível concluir uma etapa em andamento.",
     });
 }
