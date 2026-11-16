@@ -154,7 +154,38 @@ Todas as rotas de etapas e execuções exigem `Authorization: Bearer <token>`. C
 
 Os models em `database/models/` são a referência da implementação. `SistemaLauffens.sql` é um rascunho da estrutura.
 
-A conclusão de uma etapa gera notificações para os participantes ativos do projeto, na mesma transação. As rotas exigem JWT e permitem acessar somente as notificações do próprio usuário: `GET /notificacoes/usuario/:usuarioId` (filtro opcional `?lida=true|false`), `GET /notificacoes/usuario/:usuarioId/nao-lidas/contagem` e `PATCH /notificacoes/usuario/:usuarioId/:notificacaoId/lida`. A geração de avisos de atraso e o envio push ainda não estão implementados.
+A conclusão de uma etapa gera notificações para todos os administradores ativos, dentro da transação de conclusão. As rotas exigem JWT, perfil Administrativo e acesso apenas ao próprio destinatário: `GET /notificacoes/usuario/:usuarioId` (filtro opcional `?lida=true|false`), `GET /notificacoes/usuario/:usuarioId/nao-lidas/contagem` e `PATCH /notificacoes/usuario/:usuarioId/:notificacaoId/lida`. O envio Web Push para navegador/PWA está implementado. A geração de avisos de atraso continua pendente.
+
+### Mensagem de conclusão e notificações no celular
+
+O título e o corpo são montados uma única vez em `notificacoes.service.js` e salvos no banco. A central e o push usam esse mesmo conteúdo, por exemplo:
+
+> **Etapa Corte concluída**
+>
+> O Corte do projeto “Cozinha planejada”, do cliente João Silva, foi finalizado em 16/11/2026 às 14:35.
+
+Os nomes vêm do projeto e do cliente associados à etapa. A data é `etapa.data_fim`, formatada no fuso `America/Sao_Paulo`; não é o horário de envio do push. Fitagem utiliza a concordância “A Fitagem [...] foi finalizada”. O sistema salva o texto da conclusão, preservando os nomes históricos da mensagem se o cadastro mudar depois.
+
+Para habilitar no dispositivo:
+
+1. Execute o servidor normalmente com `npm start` ou `npm run dev`.
+2. Acesse `/notificacoes/ativar` no endereço do servidor, entre com uma conta administrativa e clique em **Ativar notificações neste dispositivo**.
+3. Autorize as notificações no navegador. No celular, use HTTPS; um endereço HTTP da rede local não atende aos requisitos de segurança do navegador. Localhost pode ser usado no desenvolvimento no próprio computador.
+4. Para iPhone/iPad compatível com Web Push, adicione o site à Tela de Início e abra por esse ícone antes de habilitar.
+
+A página oferece a central de avisos com filtro de lidas/não lidas, contador, atualização e marcação de leitura. O JWT permanece apenas em memória, sem ser salvo em localStorage, URL ou no service worker. Dados da API não são armazenados no cache offline. Sair da central não desativa o push; há um botão separado para desativar o dispositivo.
+
+| Método e rota | Finalidade |
+|---|---|
+| `GET /notificacoes/push/chave-publica` | Retorna somente a chave pública e o ID do administrador autenticado. |
+| `POST /notificacoes/push/inscricao` | Recebe a inscrição produzida pelo PushManager do navegador. |
+| `DELETE /notificacoes/push/inscricao` | Remove essa inscrição, sem apagar os avisos do sistema. |
+
+Essas três rotas exigem JWT e perfil Administrativo. A inscrição é guardada como JSON no campo `usuario.push_token`, já existente. O model atual comporta um dispositivo push por usuário; habilitar outro substitui a inscrição anterior. Os avisos do sistema continuam disponíveis em qualquer sessão administrativa autorizada.
+
+O envio usa `web-push`. Na primeira configuração local, as chaves VAPID são geradas uma única vez em `.push-keys.json`, com acesso restrito e ignorado pelo Git. Preserve esse arquivo entre reinícios. Em hospedagem com disco temporário, configure `VAPID_PUBLIC_KEY` e `VAPID_PRIVATE_KEY` nas variáveis do servidor, sem expor a chave privada ao navegador. `VAPID_SUBJECT` permite definir a URL ou e-mail de contato; por padrão é usada a URL deste repositório.
+
+As notificações são persistidas antes do envio. Somente depois do commit o processamento é acionado. Ao iniciar o servidor e a cada 30 segundos, `notificacoes.push.js` consulta a fila; um bloqueio do banco evita o processamento simultâneo por servidores diferentes. Avisos Pendente/Falhou das últimas 24 horas e com dispositivo cadastrado podem ser enviados. Falhas temporárias são tentadas novamente, inscrições expiradas são removidas e os avisos permanecem na central. `Enviada` indica aceitação pelo serviço de push, não confirmação de leitura no aparelho; a leitura usa `lida_em`. O service worker usa o ID da notificação como tag para substituir eventuais repetições visuais.
 
 ### Execução
 

@@ -41,8 +41,6 @@ function validarCampos(dados, permitidos) {
 }
 
 async function exigirEtapa(id, transaction) {
-    // Todas as operações bloqueiam primeiro o projeto e depois a etapa.
-    // Isso evita disputa de bloqueios com cancelamento e alteração da equipe.
     if (transaction) {
         const encontrada = await etapasRepository.buscarPorId(id, undefined, { transaction });
         if (!encontrada) throw erroHttp(404, "Etapa não encontrada.");
