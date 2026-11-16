@@ -6,9 +6,6 @@ const path = require("node:path");
 const router = express.Router();
 
 const pastaPwa = path.join(__dirname, "pwa");
-router.get("/ativar", (req, res) => res.sendFile(path.join(pastaPwa, "notificacoes.html")));
-router.get("/push-client.js", (req, res) => res.sendFile(path.join(pastaPwa, "push-client.js")));
-router.get("/manifest.webmanifest", (req, res) => res.sendFile(path.join(pastaPwa, "manifest.webmanifest")));
 router.get("/lauffens-logo.jpeg", (req, res) => res.sendFile(path.join(pastaPwa, "lauffens-logo.jpeg")));
 router.get("/sw.js", (req, res) => {
     res.set("Cache-Control", "no-cache");
