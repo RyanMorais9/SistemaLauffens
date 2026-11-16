@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#164e43">
+    <link rel="manifest" href="/notificacoes/manifest.webmanifest">
+    <link rel="icon" type="image/jpeg" href="/notificacoes/lauffens-logo.jpeg">
+    <link rel="apple-touch-icon" href="/notificacoes/lauffens-logo.jpeg">
+    <title>Notificações — Lauffens</title>
+    <style>
+        * { box-sizing: border-box; }
+        body { margin: 0; padding: 32px 20px; font: 16px/1.6 system-ui, sans-serif; background: #f4f5f1; color: #193b33; }
+        main { max-width: 680px; margin: auto; }
+        h1 { margin-bottom: 8px; font-size: 2rem; }
+        h2 { margin-top: 0; font-size: 1.15rem; }
+        form, article, .painel { margin-top: 20px; padding: 24px; background: white; border: 1px solid #d7dfd8; border-radius: 12px; }
+        label { display: block; margin-top: 12px; }
+        input, select, button { font: inherit; border-radius: 6px; padding: 10px 14px; }
+        input { display: block; width: 100%; border: 1px solid #8caaa0; }
+        button { cursor: pointer; background: #164e43; color: white; border: 1px solid #164e43; margin: 12px 6px 0 0; }
+        button:disabled { opacity: .55; cursor: default; }
+        select { max-width: 100%; border: 1px solid #8caaa0; background: white; }
+        :focus-visible { outline: 3px solid #cc7c28; outline-offset: 3px; }
+        #mensagem { min-height: 1.6em; }
+        .acoes { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+        .acoes button { margin: 0; }
+        .lida { color: #53695e; }
+        [hidden] { display: none !important; }
+    </style>
+    <script src="/notificacoes/push-client.js" defer></script>
+</head>
+<body>
+<main>
+    <h1>Notificações Lauffens</h1>
+    <p>Acompanhe as etapas concluídas e receba os avisos neste dispositivo.</p>
+    <p id="mensagem" role="status" aria-live="polite"></p>
+    <form id="login-form">
+        <h2>Acesso administrativo</h2>
+        <label for="login">Login</label>
+        <input id="login" name="login" autocomplete="username" required maxlength="30">
+        <label for="senha">Senha</label>
+        <input id="senha" name="senha" type="password" autocomplete="current-password" required>
+        <button type="submit">Entrar</button>
+    </form>
+    <section id="central" hidden>
+        <div class="painel">
+            <h2 id="contagem">Seus avisos</h2>
+            <p id="estado-push"></p>
+            <button id="ativar" type="button">Ativar notificações neste dispositivo</button>
+            <button id="desativar" type="button">Desativar neste dispositivo</button>
+            <p>Para receber avisos no celular, abra esta página por HTTPS. No iPhone, adicione o site à Tela de Início e abra pelo ícone.</p>
+            <button id="sair" type="button">Sair da central</button>
+        </div>
+        <div class="painel acoes">
+            <label for="filtro">Mostrar</label>
+            <select id="filtro">
+                <option value="">Todos os avisos</option>
+                <option value="false">Não lidos</option>
+                <option value="true">Lidos</option>
+            </select>
+            <button id="atualizar" type="button">Atualizar</button>
+        </div>
+        <div id="avisos" aria-live="polite"></div>
+    </section>
+</main>
+</body>
+</html>
