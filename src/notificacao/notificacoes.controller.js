@@ -1,6 +1,24 @@
 const service = require("./notificacoes.service");
 
 class NotificacoesController {
+    async obterChavePublica(req, res, next) {
+        try {
+            return res.status(200).json({ ...service.obterChavePublica(), usuario_id: req.user.usuario_id });
+        } catch (erro) { return next(erro); }
+    }
+
+    async cadastrarInscricao(req, res, next) {
+        try {
+            return res.status(200).json(await service.cadastrarInscricao(req.user.usuario_id, req.body));
+        } catch (erro) { return next(erro); }
+    }
+
+    async removerInscricao(req, res, next) {
+        try {
+            return res.status(200).json(await service.removerInscricao(req.user.usuario_id, req.body));
+        } catch (erro) { return next(erro); }
+    }
+
     async listarPorUsuario(req, res, next) {
         try {
             return res.status(200).json(

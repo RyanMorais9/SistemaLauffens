@@ -1,4 +1,5 @@
 const repository = require("./notificacoes.repository");
+const push = require("./notificacoes.push.js");
 
 function erroHttp(status, mensagem) {
     const erro = new Error(mensagem);
@@ -16,23 +17,64 @@ function validarId(id, campo) {
 
 class NotificacoesService {
     async gerarNotificacoesEtapaConcluida(etapa, transaction) {
-        const destinatarios = await repository.listarDestinatariosAtivos(
-            etapa.proj_id,
-            transaction
-        );
+        const destinatarios = await repository.listarAdministradoresAtivos(transaction);
         if (destinatarios.length === 0) return [];
-
-        return repository.criarEmLote(
+        const projeto = await repository.buscarProjetoComCliente(etapa.proj_id, transaction);
+        if (!projeto || !projeto.cliente) throw erroHttp(409, "Projeto ou cliente da etapa não encontrado.");
+        const dataFim = new Date(etapa.data_fim);
+        if (etapa.data_fim == null || !Number.isFinite(dataFim.getTime())) {
+            throw erroHttp(409, "A etapa precisa ter uma data de conclusão válida.");
+        }
+        const partes = Object.fromEntries(new Intl.DateTimeFormat("pt-BR", {
+            timeZone: "America/Sao_Paulo", // Horário de Brasília. day: "2-digit", month: "2-digit", year: "numeric",
+            hour: "2-digit", minute: "2-digit", hourCycle: "h23",
+        }).formatToParts(dataFim).map(parte => [parte.type, parte.value]));
+        const data = `${partes.day}/${partes.month}/${partes.year}`;
+        const horario = `${partes.hour}:${partes.minute}`;
+        const feminina = etapa.tipo === "Fitagem";
+        const titulo = `Etapa ${etapa.tipo} concluída`;
+        const mensagem = `${feminina ? "A" : "O"} ${etapa.tipo} do projeto “${projeto.nome}”, do cliente ${projeto.cliente.nome}, foi finalizad${feminina ? "a" : "o"} em ${data} às ${horario}.`;
+        const notificacoes = await repository.criarEmLote(
             destinatarios.map(({ usuario_id }) => ({
                 usuario_destinatario_id: usuario_id,
                 proj_id: etapa.proj_id,
                 etapa_id: etapa.etapa_id,
                 tipo: "Etapa concluída",
-                titulo: `${etapa.tipo} concluída`,
-                mensagem: `A etapa ${etapa.tipo} do projeto foi concluída.`,
+                titulo,
+                mensagem,
             })),
             transaction
         );
+        if (transaction) {
+            transaction.afterCommit(() => { push.processarPendentes().catch(() => {
+                console.error("Não foi possível processar a fila de notificações push.");
+            }); });
+        } else {
+            await push.processarPendentes();
+        }
+        return notificacoes;
+    }
+
+    obterChavePublica() {
+        return { chavePublica: push.obterChavePublica() };
+    }
+
+    async cadastrarInscricao(usuarioId, dados) {
+        const id = validarId(usuarioId, "usuarioId");
+        const usuario = await repository.buscarUsuarioPorId(id);
+        if (!usuario || !usuario.ativo || usuario.perfil !== "Administrador") {
+            throw erroHttp(403, "Somente administradores ativos podem habilitar notificações push.");
+        }
+        const inscricao = push.validarInscricao(dados);
+        await repository.gravarInscricao(id, JSON.stringify(inscricao));
+        return { mensagem: "Notificações habilitadas neste dispositivo." };
+    }
+
+    async removerInscricao(usuarioId, dados) {
+        const id = validarId(usuarioId, "usuarioId");
+        const inscricao = push.validarInscricao(dados);
+        await repository.limparInscricaoExpirada(id, JSON.stringify(inscricao));
+        return { mensagem: "Notificações desabilitadas neste dispositivo." };
     }
 
     async listarPorUsuario(usuarioId, lida) {

@@ -32,6 +32,7 @@ app.use("/notificacoes", notificacoesRoutes);
 
 if (require.main === module) app.listen(PORT, () => {
     console.log(`Servidor rodando em http://localhost:${PORT}`);
+    require("./src/notificacao/notificacoes.push.js").iniciarProcessamento();
 })
 
 module.exports = app;
