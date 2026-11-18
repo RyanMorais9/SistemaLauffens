@@ -43,7 +43,7 @@ function validarDados(dados, edicao = false) {
         }
 
         const hoje = new Date();
-        const anoAtual = new Date().getFullYear();
+        const anoAtual = hoje.getFullYear();
         const mesAtual = hoje.getMonth() + 1;
         const diaAtual = hoje.getDate();
 
@@ -60,6 +60,13 @@ function validarDados(dados, edicao = false) {
         const bissexto = ano % 4 === 0 && (ano % 100 !== 0 || ano % 400 === 0);
         const diaPorMes = [31, bissexto ? 29 : 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
         if (dia < 1 || dia > diaPorMes[mes - 1]) { erroDeValidacao("Prazo inválido"); }
+
+        const anoLimite = anoAtual + 2;
+        if (ano > anoLimite
+            || (ano === anoLimite && mes > mesAtual)
+            || (ano === anoLimite && mes === mesAtual && dia > diaAtual)) {
+            erroDeValidacao("O prazo não pode ultrapassar dois anos a partir de hoje");
+        }
         resultado.prazo_planejado = dados.prazo_planejado;
     }
 

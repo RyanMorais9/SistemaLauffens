@@ -61,6 +61,8 @@ O cadastro aceita a ausência de `valor_base`, representada por `null` no model.
 
 ### API de projetos
 
+Regra de negócio — limite do prazo: no cadastro e na edição, `prazo_planejado` deve ser uma data válida entre hoje e a mesma data daqui a dois anos, inclusive. Por exemplo, em 17/11/2026, o prazo máximo é 17/11/2028. Datas posteriores são rejeitadas com HTTP 400. A regra não altera automaticamente projetos já cadastrados. Se hoje for 29 de fevereiro, o último dia válido no fevereiro do ano-limite é 28 de fevereiro.
+
 Rotas de consulta exigem JWT. Cadastro, edição, valor-base e gerenciamento de status exigem também perfil Administrativo.
 
 | Método e rota | Comportamento |
