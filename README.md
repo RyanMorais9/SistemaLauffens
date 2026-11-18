@@ -2,6 +2,41 @@
 
 Sistema de acompanhamento da produção de móveis da Lauffens, com projetos, etapas, controle de tempo, manutenção, custos de mão de obra e notificações.
 
+## Organização e execução
+
+O repositório contém os dois projetos, com dependências separadas:
+
+```text
+backend/              API Express, src/, database/, index.js e package.json
+frontend/             React com Vite, Axios e Material UI
+insomnia/             Coleção de requisições para testar a API
+SistemaLauffens.sql   Rascunho da estrutura do banco
+```
+
+Os caminhos de backend citados no restante deste documento, como `src/` e `database/`, são relativos a `backend/`.
+
+Para executar a API, abra um terminal na raiz do repositório:
+
+```bash
+cd backend
+npm install
+npm start
+```
+
+A API continua em `http://localhost:9001`. `npm run dev` usa nodemon para reiniciar nas alterações. O arquivo local `pass.env` e as chaves `.push-keys.json` ficam em `backend/` e continuam ignorados pelo Git.
+
+Para executar o frontend, abra outro terminal na raiz:
+
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+Abra o endereço mostrado pelo Vite no terminal. A base segue `Documentos/FirstReact`: JavaScript, componentes `.jsx` com funções, hooks, Axios e Material UI. `App.jsx` contém o componente principal; `Login.jsx` tem apenas a base e os comentários para implementar o login passo a passo. A autenticação no frontend ainda não está implementada.
+
+Para verificar o frontend, execute `npm run lint` e `npm run build` dentro de `frontend/`.
+
 ## O que foi implementado pelos membros
 Ryan Morais = database(completo), cliente, auth, projeto, projeto_user, usuario, manutencao
 
