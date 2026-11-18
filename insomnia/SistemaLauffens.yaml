@@ -1,0 +1,1394 @@
+type: collection.insomnia.rest/5.0
+schema_version: "5.1"
+name: Sistema Lauffens
+meta:
+  id: wrk_794435180a554fab9138f842caaa495e
+  created: 1794965215652
+  modified: 1794965215652
+  description: ""
+collection:
+  - name: Usuario
+    meta:
+      id: fld_32599471e43644cc8486c09d4103598a
+      created: 1794967520303
+      modified: 1794967520303
+      sortKey: -1794967520303
+      description: ""
+    children:
+      - url: http://localhost:9001/login
+        name: login
+        meta:
+          id: req_3029ef40eeb645158c931a4db768ec01
+          created: 1794965225986
+          modified: 1795002357549
+          isPrivate: false
+          description: ""
+          sortKey: -1794967527721
+        method: POST
+        body:
+          mimeType: application/json
+          text: |-
+            {
+                "login": "demo.marice",
+                "senha": ""
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+        authentication:
+          type: bearer
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: http://localhost:9001/usuarios
+        name: CadastrarMarceneiro/TestedeComflito
+        meta:
+          id: req_817e46c80284446bb3d9faad3fbe5bf9
+          created: 1794966535529
+          modified: 1794967540261
+          isPrivate: false
+          description: ""
+          sortKey: -1794967527521
+        method: POST
+        body:
+          mimeType: application/json
+          text: |-
+            {
+                "nome": "Marceneiro de teste",
+                "cpf": "11144477735",
+                "perfil": "Marceneiro",
+                "login": "marceneiro.teste",
+                "senha": "",
+                "salario": 3000,
+                "horas_mensais": 200
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+        authentication:
+          type: bearer
+          token: ""
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: http://localhost:9001/usuarios
+        name: ListarUser
+        meta:
+          id: req_82c8d957b9ee4ec7b442f8cc70dd506e
+          created: 1794966839080
+          modified: 1794967527337
+          isPrivate: false
+          description: ""
+          sortKey: -1794967527221
+        method: GET
+        authentication:
+          type: bearer
+          token: ""
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: http://localhost:9001/usuarios/5
+        name: BuscarUserPeloId
+        meta:
+          id: req_64a91c10866e4ce6bff4661405201dfb
+          created: 1794967157997
+          modified: 1794967535847
+          isPrivate: false
+          description: ""
+          sortKey: -1794967527421
+        method: GET
+        authentication:
+          type: bearer
+          token: ""
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: http://localhost:9001/usuarios/5
+        name: EditarUser
+        meta:
+          id: req_bf4b9174e7f7408593198eebd115677f
+          created: 1794967241931
+          modified: 1794967531463
+          isPrivate: false
+          description: ""
+          sortKey: -1794967527321
+        method: PATCH
+        body:
+          mimeType: application/json
+          text: |-
+            {
+                "nome": "Marceneiro de teste atualizado",
+                "telefone": "49999990000"
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+        authentication:
+          type: bearer
+          token: ""
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: http://localhost:9001/usuarios/5/remuneracao
+        name: AtualizarRemun
+        meta:
+          id: req_92e0d0539476405ca07680a790c43dcf
+          created: 1794967311130
+          modified: 1794967543831
+          isPrivate: false
+          description: ""
+          sortKey: -1794967527621
+        method: PUT
+        body:
+          mimeType: application/json
+          text: ""
+        headers:
+          - name: Content-Type
+            value: application/json
+        authentication:
+          type: bearer
+          token: ""
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+  - name: Cliente
+    meta:
+      id: fld_6766161969464e778e2fe311bd057f10
+      created: 1794967561511
+      modified: 1794967561511
+      sortKey: -1794967561511
+      description: ""
+    children:
+      - url: http://localhost:9001/clientes
+        name: CadastrarCliente
+        meta:
+          id: req_b4b65dd5741e4667bce64f9ad886fa23
+          created: 1794967607598
+          modified: 1794967760360
+          isPrivate: false
+          description: ""
+          sortKey: -1794967581017
+        method: POST
+        body:
+          mimeType: application/json
+          text: |-
+            {
+                "nome": "Cliente do teste Insomnia",
+                "cpf": "12345678909",
+                "telefone": "49988887777"
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+        authentication:
+          type: bearer
+          token: ""
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: http://localhost:9001/clientes/cpf/12345678909
+        name: consultarCpf
+        meta:
+          id: req_ba5e23531ba0444ab646c51cb0e149a2
+          created: 1794967789089
+          modified: 1794967849062
+          isPrivate: false
+          description: ""
+          sortKey: -1794967554369
+        method: GET
+        body:
+          mimeType: application/json
+          text: ""
+        headers:
+          - name: Content-Type
+            value: application/json
+        authentication:
+          type: bearer
+          token: ""
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: http://localhost:9001/clientes/
+        name: listarClientes
+        meta:
+          id: req_4aa316b032724c63aa8182fda4f30250
+          created: 1794967875117
+          modified: 1794967880816
+          isPrivate: false
+          description: ""
+          sortKey: -1794967541045
+        method: GET
+        body:
+          mimeType: application/json
+          text: ""
+        headers:
+          - name: Content-Type
+            value: application/json
+        authentication:
+          type: bearer
+          token: ""
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: http://localhost:9001/clientes/3
+        name: buscarPorId
+        meta:
+          id: req_572747cc269b416bad8e2e337b7813d9
+          created: 1794967902906
+          modified: 1794967910666
+          isPrivate: false
+          description: ""
+          sortKey: -1794967534383
+        method: GET
+        body:
+          mimeType: application/json
+          text: ""
+        headers:
+          - name: Content-Type
+            value: application/json
+        authentication:
+          type: bearer
+          token: ""
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: http://localhost:9001/clientes/contar
+        name: contar
+        meta:
+          id: req_a7d2d87e1c9942b597650d07ad1907cb
+          created: 1794967941518
+          modified: 1794967947629
+          isPrivate: false
+          description: ""
+          sortKey: -1794967531052
+        method: GET
+        body:
+          mimeType: application/json
+          text: ""
+        headers:
+          - name: Content-Type
+            value: application/json
+        authentication:
+          type: bearer
+          token: ""
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: http://localhost:9001/clientes/2
+        name: EditarCliente
+        meta:
+          id: req_0fd665f0147542598b0c415e67512f15
+          created: 1794967964111
+          modified: 1794968056685
+          isPrivate: false
+          description: ""
+          sortKey: -1794967529386.5
+        method: PUT
+        body:
+          mimeType: application/json
+          text: |-
+            {
+                "nome": "Ryan Morais",
+                "telefone": "9999999999"
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+        authentication:
+          type: bearer
+          token: ""
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+  - name: projeto
+    meta:
+      id: fld_efbe60f2b5a549e4a79237e4063bc745
+      created: 1794968115057
+      modified: 1794968115057
+      sortKey: -1794968115057
+      description: ""
+    children:
+      - url: http://localhost:9001/projetos
+        name: Cadastrar
+        meta:
+          id: req_accde96def1f42f69ff56a16646ff21d
+          created: 1794968124438
+          modified: 1794968921257
+          isPrivate: false
+          description: ""
+          sortKey: -1794968124438
+        method: POST
+        body:
+          mimeType: application/json
+          text: |-
+            {
+                "nome": "Cozinha teste Insomnia",
+                "cliente_id": 1,
+                "porte": "Médio",
+                "prazo_planejado": "2030-12-20",
+                "valor_base": 1000,
+                "etapas": [
+                    {
+                        "tipo": "Corte",
+                        "tempo_planejado": 0.6
+                    },
+                    {
+                        "tipo": "Fitagem",
+                        "tempo_planejado": 0.6
+                    },
+                    {
+                        "tipo": "Refinamento",
+                        "tempo_planejado": 0.6
+                    },
+                    {
+                        "tipo": "Embalamento",
+                        "tempo_planejado": 0.6
+                    }
+                ]
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+        authentication:
+          type: bearer
+          token: ""
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: http://localhost:9001/projetos/5
+        name: ProjetoPorId
+        meta:
+          id: req_2b16c940dcb44b3abc611b83633527c9
+          created: 1795002147241
+          modified: 1795006816015
+          isPrivate: false
+          description: ""
+          sortKey: -1794967852727.5
+        method: GET
+        body:
+          mimeType: application/json
+          text: ""
+        headers:
+          - name: Content-Type
+            value: application/json
+        authentication:
+          type: bearer
+          token: ""
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: http://localhost:9001/projetos/?status=Planejado
+        name: listar
+        meta:
+          id: req_0bce8f0dafe24b8996abdec31af89978
+          created: 1795002451335
+          modified: 1795006888638
+          isPrivate: false
+          description: ""
+          sortKey: -1794967716872.25
+        method: GET
+        body:
+          mimeType: application/json
+          text: ""
+        headers:
+          - name: Content-Type
+            value: application/json
+        authentication:
+          type: bearer
+          token: ""
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: http://localhost:9001/projetos/4
+        name: editar
+        meta:
+          id: req_412cdbd320e04ce8bf8ad58d9a60ba75
+          created: 1795002509527
+          modified: 1795003123013
+          isPrivate: false
+          description: ""
+          sortKey: -1794967648944.625
+        method: PATCH
+        body:
+          mimeType: application/json
+          text: |
+            {
+                "valor_base": 89999.00
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+        authentication:
+          type: bearer
+          token: ""
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: http://localhost:9001/
+        name: registrarVB
+        meta:
+          id: req_841807c2d08f4735bbad00789dafae70
+          created: 1795002814059
+          modified: 1795002814059
+          isPrivate: false
+          description: ""
+          sortKey: -1794967614980.8125
+        method: PATCH
+        body:
+          mimeType: application/json
+          text: |
+            {
+                "nome": "Cozinha Insomnia atualizada"
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+        authentication:
+          type: bearer
+          token: ""
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+  - name: etapas
+    meta:
+      id: fld_f1871014e00845e2ac11a7b94e114b01
+      created: 1795003144060
+      modified: 1795003144060
+      sortKey: -1795003144060
+      description: ""
+    children:
+      - url: http://localhost:9001/etapas/projeto/2
+        name: BuscarPorIDProjeto
+        meta:
+          id: req_f604937903be4f0686e4a6cefc8774ec
+          created: 1795003156819
+          modified: 1795003244354
+          isPrivate: false
+          description: ""
+          sortKey: -1795003160636
+        method: GET
+        body:
+          mimeType: application/json
+          text: ""
+        headers:
+          - name: Content-Type
+            value: application/json
+        authentication:
+          type: bearer
+          token: ""
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: http://localhost:9001/etapas/5
+        name: BuscarEtapa
+        meta:
+          id: req_5500ad633c10448ba21e2e56325ef77d
+          created: 1795003332810
+          modified: 1795005312454
+          isPrivate: false
+          description: ""
+          sortKey: -1794985642537
+        method: GET
+        body:
+          mimeType: application/json
+          text: ""
+        headers:
+          - name: Content-Type
+            value: application/json
+        authentication:
+          type: bearer
+          token: ""
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: http://localhost:9001/etapas/planejamento/14
+        name: editarEtapa
+        meta:
+          id: req_16e8fff7834c450d98d6215cd0ad0df8
+          created: 1795003436812
+          modified: 1795003658186
+          isPrivate: false
+          description: ""
+          sortKey: -1794976883487.5
+        method: PUT
+        body:
+          mimeType: application/json
+          text: |
+            {
+                "tempo_planejado": 0.6
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+        authentication:
+          type: bearer
+          token: ""
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: http://localhost:9001/etapas/projeto/4
+        name: LIstarEtapaPorProjeto
+        meta:
+          id: req_bc416439d09a47d8823815291f1538ae
+          created: 1795003514116
+          modified: 1795003580496
+          isPrivate: false
+          description: ""
+          sortKey: -1794981263012.25
+        method: GET
+        body:
+          mimeType: application/json
+          text: ""
+        headers:
+          - name: Content-Type
+            value: application/json
+        authentication:
+          type: bearer
+          token: ""
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: http://localhost:9001/etapas/20/iniciar
+        name: iniciarEtapa
+        meta:
+          id: req_0ff2496f6127406ba6551b67266ed802
+          created: 1795003700115
+          modified: 1795006855619
+          isPrivate: false
+          description: ""
+          sortKey: -1794972503962.75
+        method: POST
+        body:
+          mimeType: application/json
+          text: ""
+        headers:
+          - name: Content-Type
+            value: application/json
+        authentication:
+          type: bearer
+          token: ""
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: http://localhost:9001/etapas/5/tempo
+        name: BuscarEtapaTempo
+        meta:
+          id: req_46e3bac84cd0475284f538f945b71abe
+          created: 1795005317655
+          modified: 1795005346602
+          isPrivate: false
+          description: ""
+          sortKey: -1794983452774.625
+        method: GET
+        body:
+          mimeType: application/json
+          text: ""
+        headers:
+          - name: Content-Type
+            value: application/json
+        authentication:
+          type: bearer
+          token: ""
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: http://localhost:9001/etapas/projeto/aberto/5
+        name: BuscarPorIDProjetoAberto
+        meta:
+          id: req_8b60c9fb4855415b85086e04d61d1f8d
+          created: 1795005522008
+          modified: 1795005562961
+          isPrivate: false
+          description: ""
+          sortKey: -1794994401586.5
+        method: GET
+        body:
+          mimeType: application/json
+          text: ""
+        headers:
+          - name: Content-Type
+            value: application/json
+        authentication:
+          type: bearer
+          token: ""
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: http://localhost:9001/etapas/execucao/aberta/17
+        name: BuscarPorIDExecucaoAberto
+        meta:
+          id: req_e650ad08a50f46b9b9e644e7bceb9289
+          created: 1795005581253
+          modified: 1795005775995
+          isPrivate: false
+          description: ""
+          sortKey: -1794990022061.75
+        method: GET
+        body:
+          mimeType: application/json
+          text: ""
+        headers:
+          - name: Content-Type
+            value: application/json
+        authentication:
+          type: bearer
+          token: ""
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: http://localhost:9001/etapas/17/pausar
+        name: pausarEtapa
+        meta:
+          id: req_06299c888d9f42ecbd853745dbe26f82
+          created: 1795005876369
+          modified: 1795006212690
+          isPrivate: false
+          description: ""
+          sortKey: -1794970314200.375
+        method: POST
+        body:
+          mimeType: application/json
+          text: ""
+        headers:
+          - name: Content-Type
+            value: application/json
+        authentication:
+          type: bearer
+          token: ""
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: http://localhost:9001/etapas/17/tempo
+        name: ConsultarTempo
+        meta:
+          id: req_736f426c4dab446aad78580de6583f70
+          created: 1795005927457
+          modified: 1795006050153
+          isPrivate: false
+          description: ""
+          sortKey: -1794969219319.1875
+        method: GET
+        body:
+          mimeType: application/json
+          text: ""
+        headers:
+          - name: Content-Type
+            value: application/json
+        authentication:
+          type: bearer
+          token: ""
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: http://localhost:9001/etapas/17/retomar
+        name: retomarEtapa
+        meta:
+          id: req_2049338f90714d1387d178d6348ce242
+          created: 1795006142040
+          modified: 1795006186847
+          isPrivate: false
+          description: ""
+          sortKey: -1794969766759.7812
+        method: POST
+        body:
+          mimeType: application/json
+          text: ""
+        headers:
+          - name: Content-Type
+            value: application/json
+        authentication:
+          type: bearer
+          token: ""
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: http://localhost:9001/etapas/20/concluir
+        name: concluirEtapa
+        meta:
+          id: req_0c146419f5b5464e9213fc23a37a2b94
+          created: 1795006247445
+          modified: 1795006799846
+          isPrivate: false
+          description: ""
+          sortKey: -1794969493039.4844
+        method: POST
+        body:
+          mimeType: application/json
+          text: ""
+        headers:
+          - name: Content-Type
+            value: application/json
+        authentication:
+          type: bearer
+          token: ""
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+  - name: Proj_User
+    meta:
+      id: fld_4f4916ec67cf4382afacbaf9e0d63a34
+      created: 1795003932894
+      modified: 1795003932894
+      sortKey: -1795003932894
+      description: ""
+    children:
+      - url: http://localhost:9001/projetos-usuarios/projeto/1
+        name: BuscarUserEMProjeto
+        meta:
+          id: req_eebe195d05944ab286ad9369b7779258
+          created: 1795003940513
+          modified: 1795004789412
+          isPrivate: false
+          description: ""
+          sortKey: -1795003944347
+        method: GET
+        body:
+          mimeType: application/json
+          text: ""
+        headers:
+          - name: Content-Type
+            value: application/json
+        authentication:
+          type: bearer
+          token: ""
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: http://localhost:9001/projetos-usuarios
+        name: VincularFuncionario
+        meta:
+          id: req_06add36d30f14720a95e6b2d84309652
+          created: 1795004524723
+          modified: 1795004662203
+          isPrivate: false
+          description: ""
+          sortKey: -1795003552491.5
+        method: POST
+        body:
+          mimeType: application/json
+          text: |
+            {
+                "proj_id": 5,
+                "usuario_id": 5
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+        authentication:
+          type: bearer
+          token: ""
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: http://localhost:9001/projetos-usuarios/usuario/3
+        name: BuscarParticipacaoUser
+        meta:
+          id: req_a265691684134b8e96d8b52fb8e9247b
+          created: 1795004813814
+          modified: 1795005060602
+          isPrivate: false
+          description: ""
+          sortKey: -1795003748419.25
+        method: GET
+        body:
+          mimeType: application/json
+          text: ""
+        headers:
+          - name: Content-Type
+            value: application/json
+        authentication:
+          type: bearer
+          token: ""
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: http://localhost:9001/projetos-usuarios/9
+        name: BuscarVinculo
+        meta:
+          id: req_ad6c4362f422422d897edae1285805e4
+          created: 1795005069020
+          modified: 1795005131193
+          isPrivate: false
+          description: ""
+          sortKey: -1795003650455.375
+        method: GET
+        body:
+          mimeType: application/json
+          text: ""
+        headers:
+          - name: Content-Type
+            value: application/json
+        authentication:
+          type: bearer
+          token: ""
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+  - name: execucao
+    meta:
+      id: fld_d5fc4df1c8a0454b9e831991ead6c891
+      created: 1795005279204
+      modified: 1795005279204
+      sortKey: -1795005279204
+      description: ""
+    children:
+      - url: http://localhost:9001/execucoes/etapa/17
+        name: ExecucaoEtapa
+        meta:
+          id: req_2ff356c1ed824b0c8050bc102fdfb845
+          created: 1795005358878
+          modified: 1795005441897
+          isPrivate: false
+          description: ""
+          sortKey: -1795005362228
+        method: GET
+        body:
+          mimeType: application/json
+          text: ""
+        headers:
+          - name: Content-Type
+            value: application/json
+        authentication:
+          type: bearer
+          token: ""
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: http://localhost:9001/execucoes/etapa/17/aberta
+        name: ExecucaoEtapaAberta
+        meta:
+          id: req_fc055f526eda4bddbff01d432ee2c95c
+          created: 1795005454792
+          modified: 1795005731095
+          isPrivate: false
+          description: ""
+          sortKey: -1795004653287.5
+        method: GET
+        body:
+          mimeType: application/json
+          text: ""
+        headers:
+          - name: Content-Type
+            value: application/json
+        authentication:
+          type: bearer
+          token: ""
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: http://localhost:9001/execucoes/1
+        name: ExecucaoID
+        meta:
+          id: req_9163b08762ea4ec4b3ae1f429ec18d04
+          created: 1795005809340
+          modified: 1795005864421
+          isPrivate: false
+          description: ""
+          sortKey: -1795004298817.25
+        method: GET
+        body:
+          mimeType: application/json
+          text: ""
+        headers:
+          - name: Content-Type
+            value: application/json
+        authentication:
+          type: bearer
+          token: ""
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+  - name: notificacao
+    meta:
+      id: fld_b226b1c7bacd48a1b366575d15570f19
+      created: 1795006333883
+      modified: 1795006333883
+      sortKey: -1795006333883
+      description: ""
+    children:
+      - url: http://localhost:9001/notificacoes/usuario/1
+        name: NotificacaoUser
+        meta:
+          id: req_4008e93d65d54c70b75ba0d453425f50
+          created: 1795006337845
+          modified: 1795006464003
+          isPrivate: false
+          description: ""
+          sortKey: -1795006337845
+        method: GET
+        authentication:
+          type: bearer
+          token: ""
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: http://localhost:9001/notificacoes/usuario/1/nao-lidas/contagem
+        name: NotificacaoUserNaoLidasQnts
+        meta:
+          id: req_57f3eb56b9db427b89bab0793eed972b
+          created: 1795006518235
+          modified: 1795006604879
+          isPrivate: false
+          description: ""
+          sortKey: -1795005850036.5
+        method: GET
+        authentication:
+          type: bearer
+          token: ""
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: http://localhost:9001/notificacoes/usuario/1?lida=false
+        name: NaoLidaNotificacao
+        meta:
+          id: req_bb81e2b768f24d49866e47b56ebd8033
+          created: 1795006936308
+          modified: 1795007270096
+          isPrivate: false
+          description: ""
+          sortKey: -1795005606132.25
+        method: GET
+        authentication:
+          type: bearer
+          token: ""
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: http://localhost:9001/notificacoes/usuario/1/8/lida
+        name: MarcarComoLida
+        meta:
+          id: req_21f980373d3546aa87a58ad1c528cd60
+          created: 1795007094660
+          modified: 1795007177934
+          isPrivate: false
+          description: ""
+          sortKey: -1795005484180.125
+        method: PATCH
+        authentication:
+          type: bearer
+          token: ""
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+  - name: manutencao
+    meta:
+      id: fld_cfe73913bcfe4f4caff83f0954631b40
+      created: 1795007335733
+      modified: 1795007335733
+      sortKey: -1795007335733
+      description: ""
+    children:
+      - url: http://localhost:9001/manutencoes/
+        name: registrarManutencao
+        meta:
+          id: req_857c139eb8da44c48cfa718f77cfbdea
+          created: 1795007341594
+          modified: 1795007468472
+          isPrivate: false
+          description: ""
+          sortKey: -1795007345273
+        method: POST
+        body:
+          mimeType: application/json
+          text: |
+            {
+                "proj_id": 1,
+                "data_retorno": "2026-11-17",
+                "motivo": "Ajuste",
+                "descricao": "Porta desalinhada após a instalação."
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+        authentication:
+          type: bearer
+          token: ""
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: http://localhost:9001/manutencoes/
+        name: bucarManutencao
+        meta:
+          id: req_a19a2aff0bf3475c880e52b136990964
+          created: 1795007479545
+          modified: 1795008352563
+          isPrivate: false
+          description: ""
+          sortKey: -1795006841559
+        method: GET
+        body:
+          mimeType: application/json
+          text: ""
+        headers:
+          - name: Content-Type
+            value: application/json
+        authentication:
+          type: bearer
+          token: ""
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: http://localhost:9001/manutencoes/?proj_id=1
+        name: bucarManutencaoEMProjeto
+        meta:
+          id: req_404559418e084726aeeb8e83d0b3b0c1
+          created: 1795007525702
+          modified: 1795007859339
+          isPrivate: false
+          description: ""
+          sortKey: -1795006589702
+        method: GET
+        body:
+          mimeType: application/json
+          text: ""
+        headers:
+          - name: Content-Type
+            value: application/json
+        authentication:
+          type: bearer
+          token: ""
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: http://localhost:9001/manutencoes/?status=Aberta
+        name: bucarManutencaoAberta
+        meta:
+          id: req_dca34fdd5bc64814b8b56b315e8caa64
+          created: 1795007588566
+          modified: 1795007679618
+          isPrivate: false
+          description: ""
+          sortKey: -1795006463773.5
+        method: GET
+        body:
+          mimeType: application/json
+          text: ""
+        headers:
+          - name: Content-Type
+            value: application/json
+        authentication:
+          type: bearer
+          token: ""
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: http://localhost:9001/manutencoes/?status=Resolvida&proj_id=1
+        name: bucarManutencaoAbertaEMProjeto
+        meta:
+          id: req_daa97268bae74f4ba8c509a20907c38e
+          created: 1795007686314
+          modified: 1795007725905
+          isPrivate: false
+          description: ""
+          sortKey: -1795006400809.25
+        method: GET
+        body:
+          mimeType: application/json
+          text: ""
+        headers:
+          - name: Content-Type
+            value: application/json
+        authentication:
+          type: bearer
+          token: ""
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: http://localhost:9001/manutencoes/2
+        name: editar
+        meta:
+          id: req_f1b35cb28b5648e5a137b6fe8470d433
+          created: 1795007776542
+          modified: 1795008298427
+          isPrivate: false
+          description: ""
+          sortKey: -1795006369327.125
+        method: PATCH
+        body:
+          mimeType: application/json
+          text: |-
+            {
+                "descricao": "Ajustar as dobradiças da porta."
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+        authentication:
+          type: bearer
+          token: ""
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: http://localhost:9001/manutencoes/3
+        name: resolvida
+        meta:
+          id: req_091f0751bc9d49b3aa820be8c40da054
+          created: 1795008044744
+          modified: 1795008142741
+          isPrivate: false
+          description: ""
+          sortKey: -1795006353586.0625
+        method: PUT
+        body:
+          mimeType: application/json
+          text: |-
+            {
+                "data_conclusao": "2024-11-17"
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+        authentication:
+          type: bearer
+          token: ""
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+cookieJar:
+  name: Default Jar
+  meta:
+    id: jar_7a57ad7aebc5d916e34302838b4eb409d713d453
+    created: 1794965215664
+    modified: 1794965215664
+environments:
+  name: Base Environment
+  meta:
+    id: env_7a57ad7aebc5d916e34302838b4eb409d713d453
+    created: 1794965215660
+    modified: 1794965215660
+    isPrivate: false
