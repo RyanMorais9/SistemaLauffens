@@ -26,7 +26,8 @@ class NotificacoesService {
             throw erroHttp(409, "A etapa precisa ter uma data de conclusão válida.");
         }
         const partes = Object.fromEntries(new Intl.DateTimeFormat("pt-BR", {
-            timeZone: "America/Sao_Paulo", // Horário de Brasília. day: "2-digit", month: "2-digit", year: "numeric",
+            timeZone: "America/Sao_Paulo",
+            day: "2-digit", month: "2-digit", year: "numeric",
             hour: "2-digit", minute: "2-digit", hourCycle: "h23",
         }).formatToParts(dataFim).map(parte => [parte.type, parte.value]));
         const data = `${partes.day}/${partes.month}/${partes.year}`;
