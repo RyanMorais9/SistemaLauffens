@@ -12,6 +12,10 @@ async function buscarPorId(id, options = {}) {
     return usuario.findByPk(id, { ...options, attributes: { exclude: ["senha"] }});
 }
 
+async function buscarCredenciaisPorId(id, options = {}) {
+    return usuario.findByPk(id, { ...options, attributes: ["usuario_id", "senha"] });
+}
+
 async function editar(id, dados, options = {}) {
     const usuarioFound = await usuario.findByPk(id, options);
     if(!usuarioFound) return null;
@@ -39,6 +43,12 @@ async function desativar(id, options = {}) {
     return usuarioFound.update(ativo, options);
 }
 
+async function reativar(id, options = {}) {
+    const usuarioFound = await usuario.findByPk(id, options);
+    if(!usuarioFound) return null;
+    return usuarioFound.update({ ativo: true }, options);
+}
+
 async function contarAdministradoresAtivos(options = {}) {
     return usuario.count({ ...options, where:{perfil: "Administrador", ativo: true}})
 }
@@ -56,10 +66,12 @@ module.exports = {
     cadastrar,
     listar,
     buscarPorId,
+    buscarCredenciaisPorId,
     editar,
     atualizarRemuneracao,
     gravarPushToken,
     desativar,
+    reativar,
     contarAdministradoresAtivos,
     comBloqueioAdministradores
 }

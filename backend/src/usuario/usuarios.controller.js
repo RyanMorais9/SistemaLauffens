@@ -101,6 +101,45 @@ async function desativar(req, res) {
         return res.status(status).json({ erro: status === 500 ? "Erro interno no servidor" : erro.message });
     }
 }
+async function reativar(req, res) {
+    try {
+        const id = Number(req.params.id);
+        const reativado = await usuarioService.reativar(id);
+        if (!reativado) {
+            return res.status(404).json({ erro: "Usuario não encontrado" });
+        }
+        return res.status(200).json(reativado);
+    } catch (erro) {
+        const status = erro.status || 500;
+        return res.status(status).json({ erro: status === 500 ? "Erro interno no servidor" : erro.message });
+    }
+}
+
+async function meuPerfil(req, res) {
+    try {
+        const usuario = await usuarioService.buscarMeuPerfil(req.user.usuario_id);
+        if (!usuario) return res.status(404).json({ erro: "Usuario não encontrado" });
+        return res.status(200).json(usuario);
+    } catch (erro) {
+        const status = erro.status || 500;
+        return res.status(status).json({ erro: status === 500 ? "Erro interno no servidor" : erro.message });
+    }
+}
+
+async function editarMeuPerfil(req, res) {
+    try {
+        const usuario = await usuarioService.editarMeuPerfil(req.user.usuario_id, req.body);
+        if (!usuario) return res.status(404).json({ erro: "Usuario não encontrado" });
+        return res.status(200).json(usuario);
+    } catch (erro) {
+        if (erro.name === "SequelizeUniqueConstraintError") {
+            return res.status(409).json({ erro: "Login já cadastrado" });
+        }
+        const status = erro.status || 500;
+        return res.status(status).json({ erro: status === 500 ? "Erro interno no servidor" : erro.message });
+    }
+}
+
 module.exports = {
     cadastrar,
     listar,
@@ -108,5 +147,8 @@ module.exports = {
     editar,
     atualizarRemuneracao,
     gravarPushToken,
-    desativar
+    desativar,
+    reativar,
+    meuPerfil,
+    editarMeuPerfil
 };

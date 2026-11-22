@@ -265,6 +265,54 @@ async function desativar(id, idUsuarioAutenticado) {
     });
 }
 
+function dadosDoPerfil(user) {
+    if (!user) return null;
+    const dados = typeof user.toJSON === "function" ? user.toJSON() : user;
+    const { usuario_id, nome, cpf, perfil, login, nascimento, telefone } = dados;
+    return { usuario_id, nome, cpf, perfil, login, nascimento, telefone };
+}
+
+async function buscarMeuPerfil(id) {
+    return dadosDoPerfil(await usuarioRepository.buscarPorId(validarId(id)));
+}
+
+async function editarMeuPerfil(id, dados) {
+    const idValidado = validarId(id);
+    if (!dados || typeof dados !== "object" || Array.isArray(dados)) {
+        erroDeValidacao("Envie um objeto com os dados do perfil.");
+    }
+    const permitidos = ["nome", "login", "telefone", "nascimento", "senha", "senha_atual"];
+    if (Object.keys(dados).some(campo => !permitidos.includes(campo))) {
+        erroDeValidacao("Campos não permitidos na edição do próprio perfil.");
+    }
+    const { senha_atual, ...alteracoes } = dados;
+    const validados = validarDados(alteracoes, true);
+    return usuarioRepository.comBloqueioAdministradores(async transaction => {
+        const options = { transaction };
+        const atual = await usuarioRepository.buscarPorId(idValidado, options);
+        if (!atual) return null;
+        if (validados.senha !== undefined || (validados.login !== undefined && validados.login !== atual.login)) {
+            if (typeof senha_atual !== "string" || !senha_atual || Buffer.byteLength(senha_atual, "utf-8") > 72) {
+                erroDeValidacao("Informe sua senha atual para alterar o login ou a senha.");
+            }
+            const credenciais = await usuarioRepository.buscarCredenciaisPorId(idValidado, options);
+            if (!credenciais || !(await bcrypt.compare(senha_atual, credenciais.senha))) {
+                erroDeValidacao("Senha atual incorreta.");
+            }
+        }
+        if (validados.senha !== undefined) validados.senha = await bcrypt.hash(validados.senha, 10);
+        return dadosDoPerfil(await usuarioRepository.editar(idValidado, validados, options));
+    });
+}
+
+async function reativar(id) {
+    const idValidado = validarId(id);
+    return usuarioRepository.comBloqueioAdministradores(async (transaction) => {
+        const usuarioReativado = await usuarioRepository.reativar(idValidado, { transaction });
+        return removerSenha(usuarioReativado);
+    });
+}
+
 module.exports = {
     cadastrar,
     listar,
@@ -272,5 +320,8 @@ module.exports = {
     editar,
     atualizarRemuneracao,
     gravarPushToken,
-    desativar
+    desativar,
+    reativar,
+    buscarMeuPerfil,
+    editarMeuPerfil
 }
