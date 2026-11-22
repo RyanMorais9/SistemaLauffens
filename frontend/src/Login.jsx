@@ -1,5 +1,5 @@
 import { useState } from "react";
-import axios from "axios";
+import api from "./api.js";
 import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
@@ -21,12 +21,12 @@ export default function Login({ aoEntrar }) {
         setCarregando(true);
         try {
             const dados = { login: login.trim(), senha: senha };
-            const response = await axios.post("http://localhost:9001/login", dados);
+            const response = await api.post("/login", dados);
             if (!response.data.token) {
                 setErro("A resposta de autenticação é inválida");
                 return;
             }
-            aoEntrar(response.data.token)
+            aoEntrar(response.data.token, response.data.perfil, response.data.usuario_id);
             if (!response.data.token) {
                 setErro("A resposta de autenticação é inválida");
             }
@@ -46,7 +46,7 @@ export default function Login({ aoEntrar }) {
         <Box sx={{
             position: "relative",
             display: "flex",
-            minHeight: "100vh",
+            minHeight: "100dvh",
             overflow: "hidden",
             isolation: "isolate",
             "&::before": {
@@ -70,7 +70,7 @@ export default function Login({ aoEntrar }) {
                     position: "absolute",
                     top: 24,
                     left: 24,
-                    width: 180,
+                    width: { xs: 140, sm: 180 },
                     height: "auto"
                 }}
             />
@@ -80,11 +80,11 @@ export default function Login({ aoEntrar }) {
                 flexDirection: "column",
                 justifyContent: "flex-end",
                 alignItems: "center",
-                p: 4
+                p: { xs: 3, sm: 4 }
             }}>
-                <Box sx={{ width: "100%", maxWidth: 1200, pb: 8 }}>
-                    <Box sx={{ display: "flex", gap: 3, alignItems: "flex-end" }}>
-                        <Box sx={{ flex: 1, minWidth: 0 }}>
+                <Box sx={{ width: "100%", maxWidth: 1200, pb: { xs: 2, sm: 8 } }}>
+                    <Box sx={{ display: "flex", flexDirection: { xs: "column", sm: "row" }, gap: 3, alignItems: { xs: "stretch", sm: "flex-end" } }}>
+                        <Box sx={{ flex: 1, minWidth: 0, width: { xs: "100%", sm: "auto" } }}>
                             <Typography
                                 component="h2"
                                 sx={{
@@ -106,7 +106,7 @@ export default function Login({ aoEntrar }) {
                             />
                         </Box>
 
-                        <Box sx={{ flex: 1, minWidth: 0 }}>
+                        <Box sx={{ flex: 1, minWidth: 0, width: { xs: "100%", sm: "auto" } }}>
                             <Typography
                                 component="h2"
                                 sx={{
@@ -128,7 +128,8 @@ export default function Login({ aoEntrar }) {
                                     formHelperText: {
                                         "aria-live": "polite",
                                         sx: {
-                                            position: "absolute",
+                                            position: { xs: "static", sm: "absolute" },
+                                            minHeight: { xs: 40, sm: 0 },
                                             top: "100%",
                                             left: 0,
                                             right: 0,
