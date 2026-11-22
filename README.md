@@ -321,3 +321,20 @@ Não é obrigatório criar uma rota para cada método do repository. Métodos in
 8. Notificações, dashboard e filtros.
 
 Antes de integrar cada módulo, carregar os models e executar suas associações. Implementar as permissões antes de disponibilizar operações restritas.
+
+## Dashboard e uso no celular
+
+O Dashboard é administrativo e usa os tempos calculados pela API de projetos, sem multiplicar o tempo pela quantidade de funcionários. Permite filtrar por hoje, últimos 7/30 dias, mês atual, todo o histórico ou intervalo personalizado, além do porte. Os registros por etapa podem ser ordenados pelo menor ou maior tempo. Os gráficos comparam as durações por etapa e por projeto no período consultado; um projeto pode ser aberto diretamente no painel.
+
+Abaixo de 900 px, a navegação lateral fica no botão de menu da barra superior. No computador, a lateral permanece visível durante a rolagem. Filtros, formulários e gráficos reorganizam suas colunas conforme a largura.
+
+Para abrir em um celular na mesma rede Wi-Fi:
+
+1. Inicie o backend na pasta `backend` com `npm start`.
+2. Inicie o frontend na pasta `frontend` com `npm run dev`.
+3. No computador, execute `hostname -I` para descobrir o IP da rede local.
+4. No navegador do celular, abra `http://IP-DO-COMPUTADOR:5173` (ou a porta indicada pelo Vite).
+
+O Vite está configurado para aceitar conexões da rede local. O frontend usa `/api`; o proxy do Vite encaminha as chamadas para a API do computador na porta 9001. Assim, o celular não tenta acessar seu próprio localhost. Se não conectar, confira se os aparelhos estão na mesma rede e se a porta do frontend está liberada no firewall.
+
+Em uma publicação, configure o servidor para encaminhar `/api` ao backend ou defina `VITE_API_URL` com o endereço público da API antes de gerar o build. O proxy do Vite é usado somente durante o desenvolvimento. Notificações push no celular exigem HTTPS e navegador compatível; acessar a rede local por HTTP permite testar as telas, mas não habilita push nesse endereço.
