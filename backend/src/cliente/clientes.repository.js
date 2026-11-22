@@ -1,7 +1,15 @@
-const cliente = require("../../database/models/cliente.model.js");
+const { cliente, projeto } = require("../../database/models");
 
 async function listar() {
-    return cliente.findAll({ order: [["nome", "ASC"]] });
+    return cliente.findAll({
+        order: [["nome", "ASC"]],
+        include: [{
+            model: projeto,
+            as: "projeto",
+            attributes: ["proj_id", "nome", "status"],
+            required: false
+        }]
+    });
 }
 
 async function cadastrar(dados) {

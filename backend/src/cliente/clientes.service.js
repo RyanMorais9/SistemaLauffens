@@ -46,6 +46,9 @@ function validarDados(dados, edicao = false) {
             erroDeValidacao("O nome é obrigatório.");
         }
         resultado.nome = dados.nome.trim();
+        if (/\p{N}/u.test(resultado.nome)) {
+            erroDeValidacao("O nome do cliente não pode conter números.");
+        }
         if (resultado.nome.length > 120) {
             erroDeValidacao("O nome deve ter no máximo 120 caracteres.");
         }
