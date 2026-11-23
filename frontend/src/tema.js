@@ -16,13 +16,16 @@ const tema = createTheme({
     },
     components: {
         MuiCssBaseline: { styleOverrides: { body: { overflowWrap: "anywhere" }, "#root": { minHeight: "100dvh" } } },
-        MuiButton: { styleOverrides: { root: { borderRadius: 8, minHeight: 40, "@media (max-width: 599.95px)": { minHeight: 44, maxWidth: "100%" } }, contained: { boxShadow: "none" } } },
+        MuiButton: { styleOverrides: { root: { borderRadius: 8, minHeight: 40, "&.Mui-focusVisible": { outline: "2px solid #242424", outlineOffset: 3 }, "@media (max-width: 599.95px)": { minHeight: 44, maxWidth: "100%" } }, contained: { boxShadow: "none" } } },
         MuiOutlinedInput: { styleOverrides: { root: { backgroundColor: "#fff", borderRadius: 10 } } },
         MuiIconButton: { styleOverrides: { root: { "@media (max-width: 599.95px)": { minHeight: 44, minWidth: 44 } } } },
         MuiDialog: { styleOverrides: { paper: { borderRadius: 20, "@media (max-width: 599.95px)": { margin: 16, maxWidth: "calc(100% - 32px)", maxHeight: "calc(100dvh - 32px)" } } } },
         MuiDialogTitle: { styleOverrides: { root: { fontWeight: 600, padding: "24px 24px 16px" } } },
         MuiDialogContent: { styleOverrides: { root: { padding: 24 } } },
         MuiDialogActions: { styleOverrides: { root: { padding: "12px 24px 20px" } } },
+        MuiMenu: { styleOverrides: { paper: { border: "1px solid #e5e6e3", borderRadius: 12, boxShadow: "0 12px 36px rgba(24, 28, 24, 0.12)" } } },
+        MuiMenuItem: { styleOverrides: { root: { minHeight: 44, borderRadius: 6, margin: "2px 6px", fontSize: "0.95rem" } } },
+        MuiPopover: { styleOverrides: { paper: { border: "1px solid #e5e6e3", borderRadius: 12, boxShadow: "0 12px 36px rgba(24, 28, 24, 0.12)" } } },
         MuiAlert: { styleOverrides: { root: { marginTop: 12, marginBottom: 12, borderRadius: 10 } } }
     }
 });
