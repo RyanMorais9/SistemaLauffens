@@ -8,6 +8,7 @@ import api from "./api.js";
 import Typography from "@mui/material/Typography";
 import Alert from "@mui/material/Alert";
 import Button from "@mui/material/Button";
+import FundoFolha from "./FundoFolha.jsx";
 
 const Projetos = lazy(() => import("./Projetos.jsx"));
 const Clientes = lazy(() => import("./Clientes.jsx"));
@@ -113,7 +114,8 @@ export default function App() {
             {!token ? (
                 <Login aoEntrar={entrarNoSistema} />
             ) : (
-                <Box sx={{ minHeight: "100vh" }}>
+                <Box sx={{ minHeight: "100vh", position: "relative", isolation: "isolate" }}>
+                    <FundoFolha discreto />
                     <BarraSuperior
                         token={token}
                         perfil={perfil}

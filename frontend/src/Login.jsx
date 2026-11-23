@@ -4,6 +4,7 @@ import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import Typography from "@mui/material/Typography";
+import FundoFolha from "./FundoFolha.jsx";
 
 export default function Login({ aoEntrar }) {
     const [login, setLogin] = useState("");
@@ -48,20 +49,9 @@ export default function Login({ aoEntrar }) {
             display: "flex",
             minHeight: "100dvh",
             overflow: "hidden",
-            isolation: "isolate",
-            "&::before": {
-                content: '""',
-                position: "absolute",
-                inset: "-20%",
-                zIndex: -1,
-                pointerEvents: "none",
-                backgroundImage: 'url("/Logotipo de Folha Cinza Minimalista.png")',
-                backgroundSize: "cover",
-                backgroundPosition: "right",
-                backgroundRepeat: "no-repeat",
-                transform: "translateX(25%) translateY(5%) rotate(90deg) scale(1.2)"
-            }
+            isolation: "isolate"
         }}>
+            <FundoFolha />
             <Box
                 component="img"
                 src="/lauffens-logo-preta.png"
@@ -82,7 +72,7 @@ export default function Login({ aoEntrar }) {
                 alignItems: "center",
                 p: { xs: 3, sm: 4 }
             }}>
-                <Box sx={{ width: "100%", maxWidth: 1200, pb: { xs: 2, sm: 8 } }}>
+                <Box sx={{ width: "100%", maxWidth: 1200, p: { xs: 2.5, sm: 3 }, pb: { xs: 2.5, sm: 6 }, bgcolor: "rgba(255, 255, 255, 0.88)", border: "1px solid rgba(255, 255, 255, 0.95)", borderRadius: 3 }}>
                     <Box sx={{ display: "flex", flexDirection: { xs: "column", sm: "row" }, gap: 3, alignItems: { xs: "stretch", sm: "flex-end" } }}>
                         <Box sx={{ flex: 1, minWidth: 0, width: { xs: "100%", sm: "auto" } }}>
                             <Typography
