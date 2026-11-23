@@ -1,11 +1,3 @@
---
--- PostgreSQL database dump
---
-
-\restrict tN0RSRmySwbnBw3oLlTm1J7XfgUSq0lOvTo9IBCuXH1QMD3UDr8sR9dNsT9zAq9
-
--- Dumped from database version 16.15 (Ubuntu 16.15-0ubuntu0.24.04.1)
--- Dumped by pg_dump version 16.15 (Ubuntu 16.15-0ubuntu0.24.04.1)
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -18,19 +10,10 @@ SET xmloption = content;
 SET client_min_messages = warning;
 SET row_security = off;
 
---
--- Name: motivo_exec; Type: TYPE; Schema: public; Owner: -
---
-
 CREATE TYPE public.motivo_exec AS ENUM (
     'Pausa',
     'Finalizado'
 );
-
-
---
--- Name: motivo_mntnc; Type: TYPE; Schema: public; Owner: -
---
 
 CREATE TYPE public.motivo_mntnc AS ENUM (
     'Ajuste',
@@ -40,31 +23,16 @@ CREATE TYPE public.motivo_mntnc AS ENUM (
     'Outro'
 );
 
-
---
--- Name: perfil; Type: TYPE; Schema: public; Owner: -
---
-
 CREATE TYPE public.perfil AS ENUM (
     'Administrador',
     'Marceneiro'
 );
-
-
---
--- Name: porte; Type: TYPE; Schema: public; Owner: -
---
 
 CREATE TYPE public.porte AS ENUM (
     'Pequeno',
     'Médio',
     'Grande'
 );
-
-
---
--- Name: status_etapa; Type: TYPE; Schema: public; Owner: -
---
 
 CREATE TYPE public.status_etapa AS ENUM (
     'Planejada',
@@ -73,20 +41,10 @@ CREATE TYPE public.status_etapa AS ENUM (
     'Concluída'
 );
 
-
---
--- Name: status_mntnc; Type: TYPE; Schema: public; Owner: -
---
-
 CREATE TYPE public.status_mntnc AS ENUM (
     'Aberta',
     'Resolvida'
 );
-
-
---
--- Name: status_proj; Type: TYPE; Schema: public; Owner: -
---
 
 CREATE TYPE public.status_proj AS ENUM (
     'Planejado',
@@ -96,21 +54,11 @@ CREATE TYPE public.status_proj AS ENUM (
     'Cancelado'
 );
 
-
---
--- Name: status_push; Type: TYPE; Schema: public; Owner: -
---
-
 CREATE TYPE public.status_push AS ENUM (
     'Pendente',
     'Enviada',
     'Falhou'
 );
-
-
---
--- Name: tipo_etapa; Type: TYPE; Schema: public; Owner: -
---
 
 CREATE TYPE public.tipo_etapa AS ENUM (
     'Corte',
@@ -119,24 +67,14 @@ CREATE TYPE public.tipo_etapa AS ENUM (
     'Embalamento'
 );
 
-
---
--- Name: tipo_notf; Type: TYPE; Schema: public; Owner: -
---
-
 CREATE TYPE public.tipo_notf AS ENUM (
     'Atraso',
     'Etapa concluída'
 );
 
-
 SET default_tablespace = '';
 
 SET default_table_access_method = heap;
-
---
--- Name: cliente; Type: TABLE; Schema: public; Owner: -
---
 
 CREATE TABLE public.cliente (
     cliente_id integer NOT NULL,
@@ -144,11 +82,6 @@ CREATE TABLE public.cliente (
     cpf character(11) NOT NULL,
     telefone character varying(20)
 );
-
-
---
--- Name: cliente_cliente_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
 
 CREATE SEQUENCE public.cliente_cliente_id_seq
     AS integer
@@ -158,17 +91,7 @@ CREATE SEQUENCE public.cliente_cliente_id_seq
     NO MAXVALUE
     CACHE 1;
 
-
---
--- Name: cliente_cliente_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
 ALTER SEQUENCE public.cliente_cliente_id_seq OWNED BY public.cliente.cliente_id;
-
-
---
--- Name: etapa; Type: TABLE; Schema: public; Owner: -
---
 
 CREATE TABLE public.etapa (
     etapa_id integer NOT NULL,
@@ -184,11 +107,6 @@ CREATE TABLE public.etapa (
     CONSTRAINT etapa_tempo_total_segundos_check CHECK ((tempo_total_segundos >= (0)::numeric))
 );
 
-
---
--- Name: etapa_etapa_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
 CREATE SEQUENCE public.etapa_etapa_id_seq
     AS integer
     START WITH 1
@@ -197,17 +115,7 @@ CREATE SEQUENCE public.etapa_etapa_id_seq
     NO MAXVALUE
     CACHE 1;
 
-
---
--- Name: etapa_etapa_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
 ALTER SEQUENCE public.etapa_etapa_id_seq OWNED BY public.etapa.etapa_id;
-
-
---
--- Name: execucao; Type: TABLE; Schema: public; Owner: -
---
 
 CREATE TABLE public.execucao (
     execucao_id integer NOT NULL,
@@ -219,11 +127,6 @@ CREATE TABLE public.execucao (
     CONSTRAINT execucao_check CHECK (((data_fim IS NULL) OR (data_fim >= data_inicio)))
 );
 
-
---
--- Name: execucao_execucao_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
 CREATE SEQUENCE public.execucao_execucao_id_seq
     AS integer
     START WITH 1
@@ -232,17 +135,7 @@ CREATE SEQUENCE public.execucao_execucao_id_seq
     NO MAXVALUE
     CACHE 1;
 
-
---
--- Name: execucao_execucao_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
 ALTER SEQUENCE public.execucao_execucao_id_seq OWNED BY public.execucao.execucao_id;
-
-
---
--- Name: manutencao; Type: TABLE; Schema: public; Owner: -
---
 
 CREATE TABLE public.manutencao (
     mntnc_id integer NOT NULL,
@@ -255,11 +148,6 @@ CREATE TABLE public.manutencao (
     CONSTRAINT manutencao_check CHECK (((data_conclusao IS NULL) OR (data_conclusao >= data_retorno)))
 );
 
-
---
--- Name: manutencao_mntnc_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
 CREATE SEQUENCE public.manutencao_mntnc_id_seq
     AS integer
     START WITH 1
@@ -268,17 +156,7 @@ CREATE SEQUENCE public.manutencao_mntnc_id_seq
     NO MAXVALUE
     CACHE 1;
 
-
---
--- Name: manutencao_mntnc_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
 ALTER SEQUENCE public.manutencao_mntnc_id_seq OWNED BY public.manutencao.mntnc_id;
-
-
---
--- Name: notificacao; Type: TABLE; Schema: public; Owner: -
---
 
 CREATE TABLE public.notificacao (
     notf_id integer NOT NULL,
@@ -294,11 +172,6 @@ CREATE TABLE public.notificacao (
     status_push public.status_push DEFAULT 'Pendente'::public.status_push
 );
 
-
---
--- Name: notificacao_notf_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
 CREATE SEQUENCE public.notificacao_notf_id_seq
     AS integer
     START WITH 1
@@ -307,17 +180,7 @@ CREATE SEQUENCE public.notificacao_notf_id_seq
     NO MAXVALUE
     CACHE 1;
 
-
---
--- Name: notificacao_notf_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
 ALTER SEQUENCE public.notificacao_notf_id_seq OWNED BY public.notificacao.notf_id;
-
-
---
--- Name: projeto; Type: TABLE; Schema: public; Owner: -
---
 
 CREATE TABLE public.projeto (
     proj_id integer NOT NULL,
@@ -338,11 +201,6 @@ CREATE TABLE public.projeto (
     CONSTRAINT projeto_valor_final_check CHECK ((valor_final > (0)::numeric))
 );
 
-
---
--- Name: projeto_proj_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
 CREATE SEQUENCE public.projeto_proj_id_seq
     AS integer
     START WITH 1
@@ -351,17 +209,7 @@ CREATE SEQUENCE public.projeto_proj_id_seq
     NO MAXVALUE
     CACHE 1;
 
-
---
--- Name: projeto_proj_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
 ALTER SEQUENCE public.projeto_proj_id_seq OWNED BY public.projeto.proj_id;
-
-
---
--- Name: projeto_user; Type: TABLE; Schema: public; Owner: -
---
 
 CREATE TABLE public.projeto_user (
     proj_user_id integer NOT NULL,
@@ -376,11 +224,6 @@ CREATE TABLE public.projeto_user (
     CONSTRAINT projeto_user_salario_referencia_check CHECK ((salario_referencia > (0)::numeric))
 );
 
-
---
--- Name: projeto_user_proj_user_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
 CREATE SEQUENCE public.projeto_user_proj_user_id_seq
     AS integer
     START WITH 1
@@ -389,17 +232,7 @@ CREATE SEQUENCE public.projeto_user_proj_user_id_seq
     NO MAXVALUE
     CACHE 1;
 
-
---
--- Name: projeto_user_proj_user_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
 ALTER SEQUENCE public.projeto_user_proj_user_id_seq OWNED BY public.projeto_user.proj_user_id;
-
-
---
--- Name: usuario; Type: TABLE; Schema: public; Owner: -
---
 
 CREATE TABLE public.usuario (
     usuario_id integer NOT NULL,
@@ -418,11 +251,6 @@ CREATE TABLE public.usuario (
     CONSTRAINT usuario_salario_check CHECK ((salario > (0)::numeric))
 );
 
-
---
--- Name: usuario_usuario_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
 CREATE SEQUENCE public.usuario_usuario_id_seq
     AS integer
     START WITH 1
@@ -431,269 +259,95 @@ CREATE SEQUENCE public.usuario_usuario_id_seq
     NO MAXVALUE
     CACHE 1;
 
-
---
--- Name: usuario_usuario_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
 ALTER SEQUENCE public.usuario_usuario_id_seq OWNED BY public.usuario.usuario_id;
-
-
---
--- Name: cliente cliente_id; Type: DEFAULT; Schema: public; Owner: -
---
 
 ALTER TABLE ONLY public.cliente ALTER COLUMN cliente_id SET DEFAULT nextval('public.cliente_cliente_id_seq'::regclass);
 
-
---
--- Name: etapa etapa_id; Type: DEFAULT; Schema: public; Owner: -
---
-
 ALTER TABLE ONLY public.etapa ALTER COLUMN etapa_id SET DEFAULT nextval('public.etapa_etapa_id_seq'::regclass);
-
-
---
--- Name: execucao execucao_id; Type: DEFAULT; Schema: public; Owner: -
---
 
 ALTER TABLE ONLY public.execucao ALTER COLUMN execucao_id SET DEFAULT nextval('public.execucao_execucao_id_seq'::regclass);
 
-
---
--- Name: manutencao mntnc_id; Type: DEFAULT; Schema: public; Owner: -
---
-
 ALTER TABLE ONLY public.manutencao ALTER COLUMN mntnc_id SET DEFAULT nextval('public.manutencao_mntnc_id_seq'::regclass);
-
-
---
--- Name: notificacao notf_id; Type: DEFAULT; Schema: public; Owner: -
---
 
 ALTER TABLE ONLY public.notificacao ALTER COLUMN notf_id SET DEFAULT nextval('public.notificacao_notf_id_seq'::regclass);
 
-
---
--- Name: projeto proj_id; Type: DEFAULT; Schema: public; Owner: -
---
-
 ALTER TABLE ONLY public.projeto ALTER COLUMN proj_id SET DEFAULT nextval('public.projeto_proj_id_seq'::regclass);
-
-
---
--- Name: projeto_user proj_user_id; Type: DEFAULT; Schema: public; Owner: -
---
 
 ALTER TABLE ONLY public.projeto_user ALTER COLUMN proj_user_id SET DEFAULT nextval('public.projeto_user_proj_user_id_seq'::regclass);
 
-
---
--- Name: usuario usuario_id; Type: DEFAULT; Schema: public; Owner: -
---
-
 ALTER TABLE ONLY public.usuario ALTER COLUMN usuario_id SET DEFAULT nextval('public.usuario_usuario_id_seq'::regclass);
-
-
---
--- Name: cliente cliente_cpf_key; Type: CONSTRAINT; Schema: public; Owner: -
---
 
 ALTER TABLE ONLY public.cliente
     ADD CONSTRAINT cliente_cpf_key UNIQUE (cpf);
 
-
---
--- Name: cliente cliente_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
 ALTER TABLE ONLY public.cliente
     ADD CONSTRAINT cliente_pkey PRIMARY KEY (cliente_id);
-
-
---
--- Name: etapa etapa_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
 
 ALTER TABLE ONLY public.etapa
     ADD CONSTRAINT etapa_pkey PRIMARY KEY (etapa_id);
 
-
---
--- Name: execucao execucao_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
 ALTER TABLE ONLY public.execucao
     ADD CONSTRAINT execucao_pkey PRIMARY KEY (execucao_id);
-
-
---
--- Name: manutencao manutencao_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
 
 ALTER TABLE ONLY public.manutencao
     ADD CONSTRAINT manutencao_pkey PRIMARY KEY (mntnc_id);
 
-
---
--- Name: notificacao notificacao_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
 ALTER TABLE ONLY public.notificacao
     ADD CONSTRAINT notificacao_pkey PRIMARY KEY (notf_id);
-
-
---
--- Name: projeto projeto_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
 
 ALTER TABLE ONLY public.projeto
     ADD CONSTRAINT projeto_pkey PRIMARY KEY (proj_id);
 
-
---
--- Name: projeto_user projeto_user_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
 ALTER TABLE ONLY public.projeto_user
     ADD CONSTRAINT projeto_user_pkey PRIMARY KEY (proj_user_id);
-
-
---
--- Name: etapa uq_proj_etapa; Type: CONSTRAINT; Schema: public; Owner: -
---
 
 ALTER TABLE ONLY public.etapa
     ADD CONSTRAINT uq_proj_etapa UNIQUE (proj_id, tipo);
 
-
---
--- Name: projeto_user uq_proj_user; Type: CONSTRAINT; Schema: public; Owner: -
---
-
 ALTER TABLE ONLY public.projeto_user
     ADD CONSTRAINT uq_proj_user UNIQUE (proj_id, usuario_id);
-
-
---
--- Name: usuario usuario_cpf_key; Type: CONSTRAINT; Schema: public; Owner: -
---
 
 ALTER TABLE ONLY public.usuario
     ADD CONSTRAINT usuario_cpf_key UNIQUE (cpf);
 
-
---
--- Name: usuario usuario_login_key; Type: CONSTRAINT; Schema: public; Owner: -
---
-
 ALTER TABLE ONLY public.usuario
     ADD CONSTRAINT usuario_login_key UNIQUE (login);
-
-
---
--- Name: usuario usuario_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
 
 ALTER TABLE ONLY public.usuario
     ADD CONSTRAINT usuario_pkey PRIMARY KEY (usuario_id);
 
-
---
--- Name: uq_execucao_aberta; Type: INDEX; Schema: public; Owner: -
---
-
 CREATE UNIQUE INDEX uq_execucao_aberta ON public.execucao USING btree (etapa_id) WHERE (data_fim IS NULL);
-
-
---
--- Name: etapa fk_etapa_proj; Type: FK CONSTRAINT; Schema: public; Owner: -
---
 
 ALTER TABLE ONLY public.etapa
     ADD CONSTRAINT fk_etapa_proj FOREIGN KEY (proj_id) REFERENCES public.projeto(proj_id);
 
-
---
--- Name: execucao fk_exec_etapa; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
 ALTER TABLE ONLY public.execucao
     ADD CONSTRAINT fk_exec_etapa FOREIGN KEY (etapa_id) REFERENCES public.etapa(etapa_id);
-
-
---
--- Name: manutencao fk_mntnc_proj; Type: FK CONSTRAINT; Schema: public; Owner: -
---
 
 ALTER TABLE ONLY public.manutencao
     ADD CONSTRAINT fk_mntnc_proj FOREIGN KEY (proj_id) REFERENCES public.projeto(proj_id);
 
-
---
--- Name: notificacao fk_notf_etapa; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
 ALTER TABLE ONLY public.notificacao
     ADD CONSTRAINT fk_notf_etapa FOREIGN KEY (etapa_id) REFERENCES public.etapa(etapa_id);
-
-
---
--- Name: notificacao fk_notf_proj; Type: FK CONSTRAINT; Schema: public; Owner: -
---
 
 ALTER TABLE ONLY public.notificacao
     ADD CONSTRAINT fk_notf_proj FOREIGN KEY (proj_id) REFERENCES public.projeto(proj_id);
 
-
---
--- Name: notificacao fk_notf_user; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
 ALTER TABLE ONLY public.notificacao
     ADD CONSTRAINT fk_notf_user FOREIGN KEY (usuario_destinatario_id) REFERENCES public.usuario(usuario_id);
-
-
---
--- Name: projeto fk_projeto_cliente; Type: FK CONSTRAINT; Schema: public; Owner: -
---
 
 ALTER TABLE ONLY public.projeto
     ADD CONSTRAINT fk_projeto_cliente FOREIGN KEY (cliente_id) REFERENCES public.cliente(cliente_id);
 
-
---
--- Name: projeto fk_projeto_usuario; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
 ALTER TABLE ONLY public.projeto
     ADD CONSTRAINT fk_projeto_usuario FOREIGN KEY (criado_por_id) REFERENCES public.usuario(usuario_id);
-
-
---
--- Name: projeto_user fk_projuser_proj; Type: FK CONSTRAINT; Schema: public; Owner: -
---
 
 ALTER TABLE ONLY public.projeto_user
     ADD CONSTRAINT fk_projuser_proj FOREIGN KEY (proj_id) REFERENCES public.projeto(proj_id);
 
-
---
--- Name: projeto_user fk_projuser_usuario; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
 ALTER TABLE ONLY public.projeto_user
     ADD CONSTRAINT fk_projuser_usuario FOREIGN KEY (usuario_id) REFERENCES public.usuario(usuario_id);
 
-
---
--- PostgreSQL database dump complete
---
-
-\unrestrict tN0RSRmySwbnBw3oLlTm1J7XfgUSq0lOvTo9IBCuXH1QMD3UDr8sR9dNsT9zAq9
-
-
--- Dados iniciais: administrador do sistema
 INSERT INTO public.usuario (nome, cpf, perfil, login, senha, salario, horas_mensais)
 VALUES
 ('Administrador', '00000000001', 'Administrador', 'demo.marice', '$2b$10$HLcR3k25X.TqU/FxwIpskuWSYAK7P4wcBGDcDvvXJ6SZiE3kFmage', 3000.00, 220.00),
