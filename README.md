@@ -72,8 +72,8 @@ CREATE DATABASE sistemalauffens OWNER "Biluga";
 psql -h localhost -U Biluga -d sistemalauffens -f SistemaLauffens.sql
 ```
 
-Usuário inicial do sistema: login `admin`, senha `<senha>`.
-
+Usuário inicial do sistema(ADM): login `demo.marice`, senha `TesteLauffens123!`.
+Marceneceiro: login `marceneiro`, senha `TesteMarceneiro123!`.
 ## Configuração do backend
 
 Crie o arquivo `backend/pass.env` (há um modelo em `backend/pass.env.example`):
