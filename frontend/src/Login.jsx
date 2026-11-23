@@ -51,7 +51,7 @@ export default function Login({ aoEntrar }) {
             overflow: "hidden",
             isolation: "isolate"
         }}>
-            <FundoFolha />
+            <FundoFolha originalDesktop />
             <Box
                 component="img"
                 src="/lauffens-logo-preta.png"
@@ -72,7 +72,7 @@ export default function Login({ aoEntrar }) {
                 alignItems: "center",
                 p: { xs: 3, sm: 4 }
             }}>
-                <Box sx={{ width: "100%", maxWidth: 1200, p: { xs: 2.5, sm: 3 }, pb: { xs: 2.5, sm: 6 }, bgcolor: "rgba(255, 255, 255, 0.88)", border: "1px solid rgba(255, 255, 255, 0.95)", borderRadius: 3 }}>
+                <Box sx={{ width: "100%", maxWidth: 1200, pb: { xs: 2, sm: 8 } }}>
                     <Box sx={{ display: "flex", flexDirection: { xs: "column", sm: "row" }, gap: 3, alignItems: { xs: "stretch", sm: "flex-end" } }}>
                         <Box sx={{ flex: 1, minWidth: 0, width: { xs: "100%", sm: "auto" } }}>
                             <Typography

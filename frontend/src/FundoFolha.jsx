@@ -1,8 +1,20 @@
 import Box from "@mui/material/Box";
 
-export default function FundoFolha({ discreto = false }) {
+export default function FundoFolha({ discreto = false, originalDesktop = false }) {
     return (
         <Box aria-hidden="true" sx={{ position: "fixed", inset: 0, overflow: "hidden", zIndex: -1, pointerEvents: "none" }}>
+            {originalDesktop && (
+                <Box sx={{
+                    display: { xs: "none", md: "block" },
+                    position: "absolute",
+                    inset: "-20%",
+                    backgroundImage: 'url("/Logotipo de Folha Cinza Minimalista.png")',
+                    backgroundSize: "cover",
+                    backgroundPosition: "right",
+                    backgroundRepeat: "no-repeat",
+                    transform: "translateX(25%) translateY(5%) rotate(90deg) scale(1.2)"
+                }} />
+            )}
             <Box
                 component="img"
                 src="/Logotipo de Folha Cinza Minimalista.png"
@@ -11,6 +23,7 @@ export default function FundoFolha({ discreto = false }) {
                 width={1536}
                 height={1024}
                 sx={{
+                    display: { xs: "block", md: originalDesktop ? "none" : "block" },
                     position: "absolute",
                     pointerEvents: "none",
                     userSelect: "none",
