@@ -14,7 +14,7 @@ SistemaLauffens.sql   Script de criação das tabelas e dados iniciais
 ## Pré-requisitos
 
 - Node.js 20.19 ou superior (recomendado 22) e npm
-- PostgreSQL <versão>
+- PostgreSQL 16
 
 ## Bibliotecas utilizadas
 
