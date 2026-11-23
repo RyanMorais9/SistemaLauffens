@@ -27,13 +27,13 @@ export default function FundoFolha({ discreto = false, originalDesktop = false }
                     position: "absolute",
                     pointerEvents: "none",
                     userSelect: "none",
-                    width: { xs: "min(150vw, 680px)", md: "min(88vw, 1350px)" },
+                    width: { xs: originalDesktop ? "max(260vw, 105dvh)" : "min(150vw, 680px)", md: "min(88vw, 1350px)" },
                     height: "auto",
                     maxWidth: "none",
                     aspectRatio: "3 / 2",
                     objectFit: "contain",
-                    left: { xs: "68%", md: "76%" },
-                    top: { xs: "30%", md: "40%" },
+                    left: { xs: originalDesktop ? "88%" : "68%", md: "76%" },
+                    top: { xs: originalDesktop ? "68%" : "30%", md: "40%" },
                     transform: "translate(-50%, -50%) rotate(90deg)",
                     opacity: discreto ? 0.2 : 0.9
                 }}
