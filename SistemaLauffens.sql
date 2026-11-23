@@ -153,3 +153,9 @@ create table notificacao(
     constraint fk_notf_proj foreign key(proj_id) references projeto(proj_id),
     constraint fk_notf_etapa foreign key(etapa_id) references etapa(etapa_id)
 );
+
+insert into usuario (nome, cpf, telefone, perfil, login, senha, salario, horas_mensais)
+values ('Administrador', '00000000001', '49999999999', 'Administrador', 'admin',
+        '$2b$10$wlPQvBXcsCOs.iO.zr16n.cl/95Hyx7vJmsX8nAuNfWO8mUyhW/iO', 3000.00, 176.00);
+
+insert into cliente (nome, cpf, telefone) values ('Cliente Exemplo', '00000000002', '49988887777');
