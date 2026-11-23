@@ -35,6 +35,7 @@ router.get(
     controller.contarNaoLidas.bind(controller)
 );
 router.get("/usuario/:usuarioId", authConfig.requireJWTAuth, authConfig.exigirAdministrativo, exigirDestinatario, controller.listarPorUsuario.bind(controller));
+router.patch("/usuario/:usuarioId/lidas", authConfig.requireJWTAuth, authConfig.exigirAdministrativo, exigirDestinatario, controller.marcarTodasComoLidas.bind(controller));
 router.patch(
     "/usuario/:usuarioId/:notificacaoId/lida",
     authConfig.requireJWTAuth,

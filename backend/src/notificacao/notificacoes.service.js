@@ -100,6 +100,15 @@ class NotificacoesService {
         return repository.contarNaoLidas(id);
     }
 
+    async marcarTodasComoLidas(usuarioId) {
+        const id = validarId(usuarioId, "usuarioId");
+        if (!(await repository.buscarUsuarioPorId(id))) {
+            throw erroHttp(404, "Usuário não encontrado.");
+        }
+        const [atualizadas] = await repository.marcarTodasComoLidas(id, new Date());
+        return { atualizadas };
+    }
+
     async marcarComoLida(usuarioId, notificacaoId) {
         const destinatarioId = validarId(usuarioId, "usuarioId");
         const id = validarId(notificacaoId, "notificacaoId");

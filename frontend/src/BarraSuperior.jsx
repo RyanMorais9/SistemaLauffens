@@ -86,6 +86,24 @@ export default function BarraSuperior({ token, perfil, usuarioId, nome, aoSeleci
         }
     }
 
+    async function marcarTodasComoLidas() {
+        if (marcando || carregando || total === 0) return;
+        setMarcando(true);
+        setErro("");
+        try {
+            await api.patch(`/notificacoes/usuario/${usuarioId}/lidas`, null, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            setAtualizacao(atual => atual + 1);
+            aoLer();
+            tituloAvisos.current?.focus();
+        } catch (error) {
+            setErro(error.response?.data?.erro || "Não foi possível marcar todas como lidas");
+        } finally {
+            setMarcando(false);
+        }
+    }
+
     return (
         <AppBar position="sticky" color="inherit" elevation={0} sx={{ top: 0, zIndex: tema => tema.zIndex.appBar, borderBottom: "1px solid #ddd" }}>
             <Toolbar sx={{ minHeight: "64px !important", gap: 1 }}>
@@ -117,6 +135,7 @@ export default function BarraSuperior({ token, perfil, usuarioId, nome, aoSeleci
                         <Alert severity="info">Entre novamente para carregar as notificações.</Alert>
                     ) : (
                         <>
+                            <Button onClick={marcarTodasComoLidas} disabled={carregando || marcando || total === 0}>{marcando ? "Marcando..." : "Marcar todas como lidas"}</Button>
                             {carregando && <Typography>Carregando notificações...</Typography>}
                             {erro && <Alert severity="error">{erro}</Alert>}
                             {!carregando && !erro && avisos.length === 0 && <Typography>Nenhuma notificação encontrada</Typography>}

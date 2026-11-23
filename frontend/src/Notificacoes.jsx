@@ -21,6 +21,7 @@ export default function Notificacoes({ token, usuarioId, aoLer, atualizacaoExter
     const [erro, setErro] = useState("");
     const [marcando, setMarcando] = useState(false);
     const [atualizacao, setAtualizacao] = useState(0);
+    const [sucesso, setSucesso] = useState("");
 
     useEffect(() => {
         let ativo = true;
@@ -71,6 +72,25 @@ export default function Notificacoes({ token, usuarioId, aoLer, atualizacaoExter
         }
     }
 
+    async function marcarTodasComoLidas() {
+        if (marcando || carregando || totalNaoLidas === 0) return;
+        setMarcando(true);
+        setErro("");
+        setSucesso("");
+        try {
+            await api.patch(`/notificacoes/usuario/${usuarioId}/lidas`, null, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            setSucesso("Notificações marcadas como lidas");
+            setAtualizacao(atual => atual + 1);
+            aoLer?.();
+        } catch (error) {
+            setErro(error.response?.data?.erro || "Não foi possível marcar todas as notificações como lidas");
+        } finally {
+            setMarcando(false);
+        }
+    }
+
     return (
         <Container>
             <Typography component="h1" variant="h5">Notificações</Typography>
@@ -82,7 +102,9 @@ export default function Notificacoes({ token, usuarioId, aoLer, atualizacaoExter
                     <MenuItem value="true">Lidas</MenuItem>
                 </TextField>
                 <Button onClick={() => setAtualizacao(atual => atual + 1)} disabled={carregando || marcando}>Atualizar</Button>
+                <Button variant="outlined" onClick={marcarTodasComoLidas} disabled={carregando || marcando || totalNaoLidas === 0}>{marcando ? "Marcando..." : "Marcar todas como lidas"}</Button>
             </Box>
+            {sucesso && <Alert severity="success">{sucesso}</Alert>}
             {erro && <Alert severity="error">{erro}</Alert>}
             {carregando && <Typography>Carregando notificações...</Typography>}
             {!carregando && !erro && (
@@ -90,7 +112,7 @@ export default function Notificacoes({ token, usuarioId, aoLer, atualizacaoExter
                     <Typography>Não lidas: {totalNaoLidas}</Typography>
                     {notificacoes.length === 0 && <Typography>Nenhuma notificação encontrada</Typography>}
                     {notificacoes.map(item => (
-                        <Box key={item.notf_id} sx={{ p: 2, border: "1px solid #ddd" }}>
+                        <Box key={item.notf_id} sx={{ p: { xs: 2, sm: 3 }, mb: 2, bgcolor: "background.paper", border: "1px solid", borderColor: "divider", borderLeft: item.lida_em ? "1px solid #e5e6e3" : "3px solid #242424", borderRadius: 2 }}>
                             <Typography sx={{ fontWeight: item.lida_em ? "normal" : "bold" }}>{item.titulo}</Typography>
                             <Typography sx={{ whiteSpace: "pre-wrap" }}>{item.mensagem}</Typography>
                             <Typography>Recebida: {formatarHorario(item.criada_em)} (Brasília)</Typography>

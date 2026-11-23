@@ -39,6 +39,14 @@ class NotificacoesController {
         }
     }
 
+    async marcarTodasComoLidas(req, res, next) {
+        try {
+            return res.status(200).json(await service.marcarTodasComoLidas(req.params.usuarioId));
+        } catch (erro) {
+            return next(erro);
+        }
+    }
+
     async marcarComoLida(req, res, next) {
         try {
             return res.status(200).json(

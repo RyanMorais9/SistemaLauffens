@@ -73,6 +73,12 @@ class NotificacoesRepository {
         );
     }
 
+    marcarTodasComoLidas(usuarioId, lidaEm) {
+        return notificacao.update({ lida_em: lidaEm }, {
+            where: { usuario_destinatario_id: usuarioId, lida_em: null },
+        });
+    }
+
     buscarUsuarioPorId(id) {
         return usuario.findByPk(id, { attributes: ["usuario_id", "perfil", "ativo"] });
     }
