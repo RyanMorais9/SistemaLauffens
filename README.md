@@ -45,7 +45,7 @@ Todas são instaladas com `npm install` em cada pasta (`backend` e `frontend`).
 
 ## Banco de dados
 
-O sistema usa PostgreSQL. A conexão está configurada em `backend/database/connection.js` com os dados abaixo, então crie o usuário e o banco exatamente assim:
+O sistema usa PostgreSQL. Crie o usuário e o banco com os dados abaixo (são os do `backend/pass.env.example`):
 
 | Item | Valor |
 |---|---|
@@ -66,60 +66,28 @@ CREATE DATABASE sistemalauffens OWNER "Biluga";
 \q
 ```
 
-2. Execute o script na raiz do repositório. Ele cria as tabelas e insere o administrador inicial:
+2. Execute o script na raiz do repositório. Ele cria as tabelas e insere os dados iniciais:
 
 ```bash
 psql -h localhost -U Biluga -d sistemalauffens -f SistemaLauffens.sql
 ```
 
-Usuário inicial do sistema(ADM): login `demo.marice`, senha `TesteLauffens123!`.
-Marceneceiro: login `marceneiro`, senha `TesteMarceneiro123!`.
+Usuários iniciais do sistema:
+
+| Perfil | Login | Senha |
+|---|---|---|
+| Administrador | `demo.marice` | `TesteLauffens123!` |
+| Marceneiro | `marceneiro` | `TesteMarceneiro123!` |
+
+O script também cadastra um cliente de exemplo.
+
 ## Configuração do backend
 
-Crie o arquivo `backend/pass.env` (há um modelo em `backend/pass.env.example`):
-
-```env
-JWT_SECRET=troque-por-uma-chave-secreta-longa
-VAPID_PUBLIC_KEY=
-VAPID_PRIVATE_KEY=
-VAPID_SUBJECT=mailto:seu-email@exemplo.com
-```
-
-| Variável | Descrição |
-|---|---|
-| `JWT_SECRET` | Chave usada para assinar os tokens de login. Obrigatória. |
-| `VAPID_PUBLIC_KEY`, `VAPID_PRIVATE_KEY` | Chaves das notificações push. Opcionais: se ficarem fora, são geradas na primeira execução em `backend/.push-keys.json`. |
-| `VAPID_SUBJECT` | Contato (e-mail com `mailto:` ou URL) enviado ao serviço de push. Opcional. |
-
-## Como executar
-
-### Backend
+Copie o modelo para criar o arquivo `backend/pass.env`:
 
 ```bash
 cd backend
-npm install
-npm start
+cp pass.env.example pass.env
 ```
 
-A API fica em `http://localhost:9001`. Para reiniciar automaticamente a cada alteração, use `npm run dev`.
-
-### Frontend
-
-Em outro terminal:
-
-```bash
-cd frontend
-npm install
-npm run dev
-```
-
-Abra o endereço mostrado pelo Vite no terminal. O frontend usa `/api`, e o proxy do Vite encaminha as chamadas para o backend na porta 9001.
-
-## Testando a API
-
-Importe a coleção da pasta `insomnia/` no Insomnia. As rotas exigem o cabeçalho `Authorization: Bearer <token>`, obtido no login.
-
-## Autores
-
-- Ryan Morais
-- Eduardo Mariano
+Conteúdo do arquivo (se usou outros dados no PostgreSQL, ajuste as variáveis `DB_*`):
